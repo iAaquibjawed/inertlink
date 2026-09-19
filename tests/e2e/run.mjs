@@ -62,7 +62,7 @@ const server = spawn(process.execPath, [join(HERE, '..', 'manual', 'serve.mjs')]
   stdio: 'ignore',
 });
 
-const work = await mkdtemp(join(tmpdir(), 'linkverify-e2e-'));
+const work = await mkdtemp(join(tmpdir(), 'inertlink-e2e-'));
 const profile = join(work, 'profile');
 const ext = join(work, 'ext');
 await cp(DIST, ext, { recursive: true });
@@ -76,7 +76,7 @@ const extAll = join(work, 'ext-all');
 await cp(DIST, extAll, { recursive: true });
 const manifestAll = JSON.parse(await readFile(join(extAll, 'manifest.json'), 'utf8'));
 manifestAll.host_permissions = ['http://*/*', 'https://*/*'];
-manifestAll.name = 'LinkVerify (all sites)';
+manifestAll.name = 'InertLink (all sites)';
 await writeFile(join(extAll, 'manifest.json'), JSON.stringify(manifestAll, null, 2));
 
 const cdp = launchPipe({ profile, headless: !process.env.HEADED });
@@ -136,7 +136,7 @@ const scripts = await evalIn(
   'return (await chrome.scripting.getRegisteredContentScripts()).map(s => ({ id: s.id, matches: s.matches }))'
 );
 check(
-  scripts.some((s) => s.id === 'linkverify-hover' && s.matches.includes(`${ORIGIN}/*`)),
+  scripts.some((s) => s.id === 'inertlink-hover' && s.matches.includes(`${ORIGIN}/*`)),
   `registers the content script for the granted origin only (${JSON.stringify(scripts.map((s) => s.matches).flat())})`
 );
 
@@ -232,7 +232,7 @@ async function hoverLabel(selector) {
      el.dispatchEvent(new MouseEvent('mouseover', o));
      document.dispatchEvent(new MouseEvent('mousemove', o));
      await new Promise(r => setTimeout(r, 550));
-     const host = document.getElementById('linkverify-badge-root');
+     const host = document.getElementById('inertlink-badge-root');
      return host ? host.matches(':popover-open') : false;`
   );
 }
@@ -268,7 +268,7 @@ const stacking = await evalIn(
      document.dispatchEvent(new MouseEvent('mousemove', o));
      await new Promise(r => setTimeout(r, 500));
 
-     const host = document.getElementById('linkverify-badge-root');
+     const host = document.getElementById('inertlink-badge-root');
      if (host) {
        return {
          navZ: getComputedStyle(nav).zIndex,
@@ -305,13 +305,13 @@ check(
 );
 
 console.log('\nactiveTab activation path (ADR-0010)');
-await evalIn(sw, `try { await chrome.scripting.unregisterContentScripts({ ids: ['linkverify-hover'] }); } catch {}`);
+await evalIn(sw, `try { await chrome.scripting.unregisterContentScripts({ ids: ['inertlink-hover'] }); } catch {}`);
 const { result: tab2 } = await cdp.send('Target.createTarget', { url: PAGE });
 await sleep(2000);
 const page2 = await attachTo((t) => t.targetId === tab2.targetId);
 await cdp.send('Runtime.enable', {}, page2);
 
-const bare = await evalIn(page2, `return !!document.getElementById('linkverify-badge-root')`);
+const bare = await evalIn(page2, `return !!document.getElementById('inertlink-badge-root')`);
 check(bare === false, 'a fresh tab has no content script once registration is removed');
 
 // Send from an extension page, exactly as the popup does. A worker cannot receive its own
@@ -342,7 +342,7 @@ const activated = await evalIn(
    a.dispatchEvent(new MouseEvent('mouseover', o));
    document.dispatchEvent(new MouseEvent('mousemove', o));
    await new Promise(r => setTimeout(r, 600));
-   return !!document.getElementById('linkverify-badge-root');`
+   return !!document.getElementById('inertlink-badge-root');`
 );
 check(activated === true, 'badge appears on a tab activated by injection alone');
 
@@ -389,7 +389,7 @@ if (ALL_ID) {
        a.dispatchEvent(new MouseEvent('mouseover', o));
        document.dispatchEvent(new MouseEvent('mousemove', o));
        await new Promise(r => setTimeout(r, 600));
-       return !!document.getElementById('linkverify-badge-root');`
+       return !!document.getElementById('inertlink-badge-root');`
     );
     check(auto === true, 'a fresh tab badges with no icon click and no per-site grant');
   }

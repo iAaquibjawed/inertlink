@@ -46,6 +46,6 @@ createServer(async (req, res) => {
     res.writeHead(404).end('Not found');
   }
 }).listen(PORT, () => {
-  console.log(`[linkverify] smoke page → http://localhost:${PORT}/phishing-sandbox.html`);
-  console.log('           open it, then click the LinkVerify icon → "Turn on for this site"');
+  console.log(`[inertlink] smoke page → http://localhost:${PORT}/phishing-sandbox.html`);
+  console.log('           open it, then click the InertLink icon → "Turn on for this site"');
 });

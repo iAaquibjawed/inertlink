@@ -1,5 +1,5 @@
 {
-  "name": "linkverify",
+  "name": "inertlink",
   "version": "0.1.0",
   "private": true,
   "description": "Chrome MV3 extension that tells you whether a link is safe before you click it.",

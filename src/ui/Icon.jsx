@@ -40,7 +40,7 @@ export function Icon({ name, size = 18, label, className = '', ...rest }) {
 
   return (
     <svg
-      className={`lv-svg ${className}`}
+      className={`il-svg ${className}`}
       width={size}
       height={size}
       viewBox="0 0 24 24"

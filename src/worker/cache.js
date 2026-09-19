@@ -8,7 +8,7 @@
  * — the cache must not become a browsing history in disguise.
  */
 
-const PREFIX = 'lv:verdict:';
+const PREFIX = 'il:verdict:';
 
 /** TTL by verdict. Safe answers age well; dangerous ones must be allowed to expire quickly. */
 export const TTL_MS = Object.freeze({

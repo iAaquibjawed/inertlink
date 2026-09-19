@@ -15,8 +15,8 @@ import { readCached, writeCached, clearCache, cacheSize } from './cache.js';
 import { getProvider } from './providers/index.js';
 import { registerableOrigins } from '../shared/origins.js';
 
-const CONTENT_SCRIPT_ID = 'linkverify-hover';
-const BLOCKLIST_ALARM = 'linkverify-blocklist-refresh';
+const CONTENT_SCRIPT_ID = 'inertlink-hover';
+const BLOCKLIST_ALARM = 'inertlink-blocklist-refresh';
 
 /* ── content script registration (ADR-0003) ────────────────────────────────────────────────── */
 
@@ -53,7 +53,7 @@ async function syncRegistration() {
     if (existing.length) await chrome.scripting.updateContentScripts([script]);
     else await chrome.scripting.registerContentScripts([script]);
   } catch (err) {
-    console.warn('[linkverify] could not sync content script registration', err);
+    console.warn('[inertlink] could not sync content script registration', err);
   }
 }
 
@@ -94,7 +94,7 @@ async function injectIntoGranted(origins = []) {
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install') {
-    console.info('[linkverify] installed — v%s', chrome.runtime.getManifest().version);
+    console.info('[inertlink] installed — v%s', chrome.runtime.getManifest().version);
   }
   await syncRegistration();
   // Reloading the extension tears the content script out of every open tab. Without this, a
@@ -177,7 +177,7 @@ async function handleCheckUrl(message) {
         reasons: result.reasons ?? [],
       });
     } catch (err) {
-      console.warn('[linkverify] provider failed', err);
+      console.warn('[inertlink] provider failed', err);
       return nothing; // Fail safe: the content script keeps its local verdict (golden rule 6).
     } finally {
       inFlight.delete(host);
@@ -213,7 +213,7 @@ async function refreshBlocklist() {
 
     if (hosts.length) {
       await chrome.storage.local.set({
-        'lv:remote-blocklist': { hosts, fetchedAt: Date.now() },
+        'il:remote-blocklist': { hosts, fetchedAt: Date.now() },
       });
     }
   } catch {
@@ -261,7 +261,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
           return sendResponse({ ok: false, error: 'unknown-message' });
       }
     } catch (err) {
-      console.warn('[linkverify] worker error', err);
+      console.warn('[inertlink] worker error', err);
       sendResponse({ ok: false, error: 'internal' });
     }
   })();

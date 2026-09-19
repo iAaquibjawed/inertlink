@@ -70,7 +70,7 @@ export default {
         credentials: 'omit',
         cache: 'no-store',
         body: JSON.stringify({
-          client: { clientId: 'linkverify', clientVersion: '0.1.0' },
+          client: { clientId: 'inertlink', clientVersion: '0.1.0' },
           threatInfo: {
             threatTypes: Object.keys(THREAT_VERDICT),
             platformTypes: ['ANY_PLATFORM'],

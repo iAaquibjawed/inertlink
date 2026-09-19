@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "LinkVerify",
+  "name": "InertLink",
   "version": "0.1.0",
   "description": "See whether a link is safe before you click it. Local-first, private by default.",
   "minimum_chrome_version": "116",
@@ -16,7 +16,7 @@
     "type": "module"
   },
   "action": {
-    "default_title": "LinkVerify",
+    "default_title": "InertLink",
     "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "assets/icons/icon-16.png",

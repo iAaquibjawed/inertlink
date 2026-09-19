@@ -2,7 +2,7 @@
  * The permission → registration filter.
  *
  * This function decides whether the extension runs at all. Every bug in it looks identical from
- * the outside — "LinkVerify is broken" — with nothing in the console, so it gets its own tests
+ * the outside — "InertLink is broken" — with nothing in the console, so it gets its own tests
  * rather than being trusted because it is short.
  */
 

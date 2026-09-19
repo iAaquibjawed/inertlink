@@ -1,4 +1,4 @@
-# LinkVerify
+# InertLink
 
 A Chrome (Manifest V3) extension that tells you whether a link is safe **before you click it**.
 Hover any link and a small badge appears next to the cursor: green *Safe*, amber *Caution*, red
@@ -47,11 +47,11 @@ chain: worker starts → content script registered for the granted origin only �
 
 ## First run
 
-LinkVerify declares **no static content script** (ADR-0003). On a fresh install it runs on exactly
+InertLink declares **no static content script** (ADR-0003). On a fresh install it runs on exactly
 zero pages.
 
 1. Open any normal `http(s)` page.
-2. Click the LinkVerify toolbar icon.
+2. Click the InertLink toolbar icon.
 
 That's it — **clicking the icon activates it on that tab**, with no permission prompt, and badges
 work immediately.
@@ -62,10 +62,10 @@ There are three levels of access, and you pick how far to go:
 |---|---|---|
 | **Click the icon** (default) | Click the toolbar icon | That tab, that visit. `activeTab` — one click, expires on its own |
 | **This site** | Popup → **Always run on \<host\>** | That site, until you remove it |
-| **Every site** | Popup → **Or run on every site automatically**, or Options → **Where LinkVerify runs** | Everywhere, until you turn it off |
+| **Every site** | Popup → **Or run on every site automatically**, or Options → **Where InertLink runs** | Everywhere, until you turn it off |
 
 If you don't want to click the icon on each new site, use **every site**. That is the one prompt
-that makes LinkVerify behave like an always-on tool. It is opt-in, never requested at install, and
+that makes InertLink behave like an always-on tool. It is opt-in, never requested at install, and
 revocable from the same two places (ADR-0010, ADR-0012).
 
 ## Manual smoke test
@@ -126,7 +126,7 @@ tests/         vitest + golden URL fixtures (the spec) + a manual smoke page.
 | `PLAN.md` | Product spec, detection design, phased roadmap. |
 | `docs/ARCHITECTURE.md` | Trust boundaries, hover flow, storage, failure behavior. |
 | `docs/DECISIONS.md` | ADR log — what was chosen over what, and why. |
-| `design-system/linkverify/MASTER.md` | Colors, type, motion, component specs. |
+| `design-system/inertlink/MASTER.md` | Colors, type, motion, component specs. |
 
 ## Privacy
 

@@ -1,4 +1,4 @@
-# CLAUDE.md — LinkVerify
+# CLAUDE.md — InertLink
 
 > This file is the operating manual for any AI (Claude Code, etc.) working in this repo.
 > Read it fully before writing code. It is deliberately opinionated so you don't have to
@@ -7,7 +7,7 @@
 
 ## 1. What we're building
 
-**LinkVerify** is a Chrome browser extension (Manifest V3) that tells the user whether a link is
+**InertLink** is a Chrome browser extension (Manifest V3) that tells the user whether a link is
 safe **before they click it**. When the mouse hovers over any `<a>` element on a page, a small
 badge/tooltip appears near the cursor with a verdict:
 
@@ -64,7 +64,7 @@ where cheap, but don't block on it.
   - Everything is inlined at build time, so golden rule 1 still holds — `verifyNoRemoteRefs()`
     fails the build if a CDN URL appears in any shipped HTML, CSS, or JS. Any new runtime
     dependency needs a new ADR.
-- **Design system:** `design-system/linkverify/MASTER.md` is the source of truth for color, type,
+- **Design system:** `design-system/inertlink/MASTER.md` is the source of truth for color, type,
   spacing, and motion. Tokens are mirrored in `src/shared/tokens.css`. Change MASTER.md first.
 - **Detection:** Hybrid — local heuristics (Layer 1) + reputation API (Layer 2). Default API is
   **Google Safe Browsing** (Update API preferred for privacy; Lookup API acceptable for MVP behind

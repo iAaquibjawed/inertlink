@@ -64,7 +64,7 @@ drift, the file wins and PLAN.md gets fixed in the same commit.
 | Store | Holds | Why there |
 |-------|-------|-----------|
 | `chrome.storage.sync` | Settings: enabled, sensitivity, allow/blocklist, paused hosts, API key | Follows the user's profile across devices |
-| `chrome.storage.local` | Verdict cache (`lv:verdict:<host>`), bundled blocklist | Device-sized, not worth syncing, and sync has a hard quota |
+| `chrome.storage.local` | Verdict cache (`il:verdict:<host>`), bundled blocklist | Device-sized, not worth syncing, and sync has a hard quota |
 
 MV3 service workers sleep. Nothing lives in module scope across messages — every handler reads what
 it needs from storage (PLAN.md §6).

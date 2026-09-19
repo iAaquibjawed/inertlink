@@ -48,7 +48,7 @@ risk (hover must feel instant). WAAPI gives us the same spring-free enter/exit f
 
 **Consequences:**
 - Two motion implementations exist. They are kept in sync by both deriving from
-  `design-system/linkverify/MASTER.md` §5 — same durations, same easings, same reduced-motion rule.
+  `design-system/inertlink/MASTER.md` §5 — same durations, same easings, same reduced-motion rule.
 - The badge cannot use `layoutId` or `AnimatePresence`. It doesn't need them; it has one element
   and two states.
 - A `<link>` to `shared/tokens.css` was also rejected for the badge: a stylesheet request from a
@@ -84,7 +84,7 @@ promised.
 
 **Date:** 2026-09-18 · **Phase:** 0 · **Status:** accepted
 
-**Chose:** `--lv-font-sans: "Inter", <system stack>` with no `@import`.
+**Chose:** `--il-font-sans: "Inter", <system stack>` with no `@import`.
 **Over:** the `fonts.googleapis.com` import the design-system generator emitted.
 
 **Why:** Two independent reasons. (1) MV3's `extension_pages` CSP blocks remote subresources, so it
@@ -105,9 +105,9 @@ reappears in a page.
 type scale, focus-ring color, and motion easing.
 **Over:** using `ui-ux-pro-max --design-system` output verbatim.
 
-**Why:** The generator classified LinkVerify as an "Insurance Platform" from its trust keywords and
+**Why:** The generator classified InertLink as an "Insurance Platform" from its trust keywords and
 returned a marketing-landing system: hero → proof logos → pricing → "Contact Sales", with
-`clamp(3rem, 10vw, 12rem)` display type. LinkVerify has no landing page; its widest surface is a
+`clamp(3rem, 10vw, 12rem)` display type. InertLink has no landing page; its widest surface is a
 360px popup. Three specific outputs were actively wrong:
 
 1. `--color-ring: #1E293B` is the same value as `--color-primary` and near-identical to the dark
@@ -304,7 +304,7 @@ you click a link, "remember to activate me first" is close to useless.
 
 Least privilege (golden rule 4) means the *default* is narrow and the user decides — not that we
 refuse to let them decide. Nothing here is requested at install; the broad grant is opt-in, clearly
-labelled with what it means ("LinkVerify can read the pages you visit to check their links"), and
+labelled with what it means ("InertLink can read the pages you visit to check their links"), and
 revocable from the same two places.
 
 **Consequences:**
@@ -327,7 +327,7 @@ revocable from the same two places.
 
 **Chose:** `z-index: 2147483647` on the shadow **host** element, plus `popover="manual"` +
 `showPopover()` to put it in the top layer.
-**Over:** `z-index: 2147483647` on `.lv-badge` inside the shadow root, which is what shipped.
+**Over:** `z-index: 2147483647` on `.il-badge` inside the shadow root, which is what shipped.
 
 **Why:** the original z-index did nothing. A `position: fixed` element always creates a stacking
 context, so the badge's z-index was scoped *inside* the host and competed with nothing on the page.
@@ -402,7 +402,7 @@ turn off.
 - `showBadge()` takes `registrable`; `hover.js` passes `parsed.registrable` through.
 - Both halves of the host are set with `textContent`, never `innerHTML` — the host string is
   attacker-controlled.
-- `--lv-on-fill` added to `tokens.css` for ink on a saturated fill; the popup's verdict colours move
+- `--il-on-fill` added to `tokens.css` for ink on a saturated fill; the popup's verdict colours move
   with the same ramp so the two surfaces stay one system.
 - Content script grew ~2kb, still far inside the 80kb budget.
 

@@ -1,4 +1,4 @@
-# LinkVerify — Project Plan
+# InertLink — Project Plan
 
 A Chrome (Manifest V3) extension that flags whether a link is safe **on hover**, before the user
 clicks. Hybrid detection: instant local heuristics + a reputation API for borderline cases.
@@ -136,7 +136,7 @@ normal, and an unhandled rejection in a content script is a console error on som
 ## 4. File tree (what we scaffold, and why each helps AI build well)
 
 ```
-linkverify/
+inertlink/
 ├─ CLAUDE.md                 # AI operating manual — read first (already written)
 ├─ PLAN.md                   # this file
 ├─ README.md                 # human-facing: what it is, how to install

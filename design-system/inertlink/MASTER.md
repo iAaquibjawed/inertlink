@@ -1,16 +1,16 @@
-# LinkVerify — Design System (Master)
+# InertLink — Design System (Master)
 
-> **LOGIC:** When building a specific surface, first check `design-system/linkverify/pages/<name>.md`.
+> **LOGIC:** When building a specific surface, first check `design-system/inertlink/pages/<name>.md`.
 > If that file exists, its rules **override** this Master file. Otherwise follow the rules below.
 >
 > Generated from `ui-ux-pro-max` (`--variance 3 --motion 4 --density 6`), then adapted for a
 > Manifest V3 browser extension. Deviations from the raw generator output are marked **[adapted]**
 > with the reason — see `docs/DECISIONS.md`.
 
-**Project:** LinkVerify — hover-time link safety for Chrome
+**Project:** InertLink — hover-time link safety for Chrome
 **Surfaces:** hover badge (content script, shadow DOM) · popup · options page
 **Category:** security / trust utility **[adapted]** — generator guessed "Insurance Platform" off the
-trust keywords and returned a marketing-landing pattern. LinkVerify has no landing page, no hero, no
+trust keywords and returned a marketing-landing pattern. InertLink has no landing page, no hero, no
 CTA funnel. Pattern section replaced below.
 
 ---
@@ -38,16 +38,16 @@ CTA funnel. Pattern section replaced below.
 
 | Role | Hex | CSS variable |
 |------|-----|--------------|
-| Primary | `#1E293B` | `--lv-color-primary` |
-| On primary | `#FFFFFF` | `--lv-color-on-primary` |
-| Secondary | `#334155` | `--lv-color-secondary` |
-| Accent | `#22C55E` | `--lv-color-accent` |
-| Background (dark) | `#0F172A` | `--lv-color-bg` |
-| Foreground (dark) | `#F8FAFC` | `--lv-color-fg` |
-| Muted surface | `#272F42` | `--lv-color-muted` |
-| Border | `#475569` | `--lv-color-border` |
-| Destructive | `#EF4444` | `--lv-color-destructive` |
-| Focus ring | `#38BDF8` | `--lv-color-ring` **[adapted]** |
+| Primary | `#1E293B` | `--il-color-primary` |
+| On primary | `#FFFFFF` | `--il-color-on-primary` |
+| Secondary | `#334155` | `--il-color-secondary` |
+| Accent | `#22C55E` | `--il-color-accent` |
+| Background (dark) | `#0F172A` | `--il-color-bg` |
+| Foreground (dark) | `#F8FAFC` | `--il-color-fg` |
+| Muted surface | `#272F42` | `--il-color-muted` |
+| Border | `#475569` | `--il-color-border` |
+| Destructive | `#EF4444` | `--il-color-destructive` |
+| Focus ring | `#38BDF8` | `--il-color-ring` **[adapted]** |
 
 **[adapted]** Generator returned `--color-ring: #1E293B` — identical to Primary and to the dark
 background, so a focus ring would have been invisible in dark mode (Priority 1: "Invisible focus
@@ -79,7 +79,7 @@ on dark.
 
 **Shape reinforcement** — so verdict survives greyscale and peripheral vision:
 `safe` = pill, 1px border, no shadow · `caution` = pill, 1px border + left 3px bar ·
-`danger` = pill, 2px border + left 3px bar + `--lv-shadow-md`.
+`danger` = pill, 2px border + left 3px bar + `--il-shadow-md`.
 
 ### Anti-patterns
 
@@ -99,12 +99,12 @@ on dark.
   package (`assets/fonts/`, Phase 5) or we fall through to the system stack.
 
 ```css
---lv-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+--il-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                 "Helvetica Neue", Arial, sans-serif;
---lv-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+--il-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 ```
 
-Hosts and URLs render in `--lv-font-mono` — a monospace host makes `paypa1.com` visually separable
+Hosts and URLs render in `--il-font-mono` — a monospace host makes `paypa1.com` visually separable
 from `paypal.com`, which is the entire point of the `typosquat` check.
 
 ### Scale
@@ -117,12 +117,12 @@ space, one bold focal element per view — carries over; the literal sizes do no
 
 | Token | Size / line-height | Weight | Use |
 |-------|--------------------|--------|-----|
-| `--lv-text-verdict` | 15px / 1.2 | 650 | Badge verdict word ("Danger") |
-| `--lv-text-host` | 12px / 1.35 | 500 | Host string (mono, `--lv-font-mono`) |
-| `--lv-text-reason` | 12px / 1.45 | 400 | "Why" lines |
-| `--lv-text-title` | 16px / 1.3 | 600 | Popup / options headings |
-| `--lv-text-body` | 14px / 1.5 | 400 | Popup / options body |
-| `--lv-text-label` | 11px / 1.4 | 500 | Overlines, meta, counts |
+| `--il-text-verdict` | 15px / 1.2 | 650 | Badge verdict word ("Danger") |
+| `--il-text-host` | 12px / 1.35 | 500 | Host string (mono, `--il-font-mono`) |
+| `--il-text-reason` | 12px / 1.45 | 400 | "Why" lines |
+| `--il-text-title` | 16px / 1.3 | 600 | Popup / options headings |
+| `--il-text-body` | 14px / 1.5 | 400 | Popup / options body |
+| `--il-text-label` | 11px / 1.4 | 500 | Overlines, meta, counts |
 
 Floor is 11px and only for non-essential meta — no body text below 12px.
 Letter-spacing: `-0.01em` at 15px+, `0` below.
@@ -135,28 +135,28 @@ Letter-spacing: `-0.01em` at 15px+, `0` below.
 
 | Token | Value | Use |
 |-------|-------|-----|
-| `--lv-space-xs` | 4px | Icon↔label gap |
-| `--lv-space-sm` | 8px | Inline spacing, badge padding-y |
-| `--lv-space-md` | 12px | Badge padding-x, list row padding |
-| `--lv-space-lg` | 16px | Popup section padding |
-| `--lv-space-xl` | 24px | Options section gap |
-| `--lv-space-2xl` | 32px | Options page margin |
+| `--il-space-xs` | 4px | Icon↔label gap |
+| `--il-space-sm` | 8px | Inline spacing, badge padding-y |
+| `--il-space-md` | 12px | Badge padding-x, list row padding |
+| `--il-space-lg` | 16px | Popup section padding |
+| `--il-space-xl` | 24px | Options section gap |
+| `--il-space-2xl` | 32px | Options page margin |
 
 **[adapted]** Dropped the generator's `--space-3xl: 64px` "hero padding" — no surface here is tall
 enough to use it.
 
 | Token | Value |
 |-------|-------|
-| `--lv-radius-sm` | 6px |
-| `--lv-radius-md` | 8px |
-| `--lv-radius-lg` | 12px |
-| `--lv-radius-pill` | 999px |
+| `--il-radius-sm` | 6px |
+| `--il-radius-md` | 8px |
+| `--il-radius-lg` | 12px |
+| `--il-radius-pill` | 999px |
 
 | Token | Value |
 |-------|-------|
-| `--lv-shadow-sm` | `0 1px 2px rgba(0,0,0,.28)` |
-| `--lv-shadow-md` | `0 4px 12px rgba(0,0,0,.35)` |
-| `--lv-shadow-lg` | `0 10px 28px rgba(0,0,0,.42)` |
+| `--il-shadow-sm` | `0 1px 2px rgba(0,0,0,.28)` |
+| `--il-shadow-md` | `0 4px 12px rgba(0,0,0,.35)` |
+| `--il-shadow-lg` | `0 10px 28px rgba(0,0,0,.42)` |
 
 **[adapted]** Generator shadows (`rgba(0,0,0,0.05)`–`0.15`) assume a white page. The badge floats
 over arbitrary — often dark — backgrounds, so alphas are raised to keep it detached from whatever
@@ -264,11 +264,11 @@ Motion with non-overshooting springs; the stagger idea is kept for the options l
 ### Tokens
 
 ```css
---lv-dur-fast: 120ms;   /* exits */
---lv-dur-base: 180ms;   /* enters */
---lv-dur-slow: 260ms;   /* panel expand */
---lv-ease-out: cubic-bezier(.16, 1, .3, 1);
---lv-ease-in:  cubic-bezier(.4, 0, 1, 1);
+--il-dur-fast: 120ms;   /* exits */
+--il-dur-base: 180ms;   /* enters */
+--il-dur-slow: 260ms;   /* panel expand */
+--il-ease-out: cubic-bezier(.16, 1, .3, 1);
+--il-ease-in:  cubic-bezier(.4, 0, 1, 1);
 ```
 
 Exits are faster than enters (Priority 7: `exit-faster-than-enter`). Enter `ease-out`, exit `ease-in`.
@@ -276,8 +276,8 @@ Exits are faster than enters (Priority 7: `exit-faster-than-enter`). Enter `ease
 ### Badge enter/exit (vanilla)
 
 ```
-enter: opacity 0→1, translateY 4px→0, scale .96→1   180ms --lv-ease-out
-exit:  opacity 1→0, scale 1→.98                     120ms --lv-ease-in
+enter: opacity 0→1, translateY 4px→0, scale .96→1   180ms --il-ease-out
+exit:  opacity 1→0, scale 1→.98                     120ms --il-ease-in
 ```
 
 Transform + opacity only — never `width`/`height`/`top`/`left` (Priority 7 anti-pattern; also keeps
@@ -304,7 +304,7 @@ export const listStagger = {
 
 ### Reduced motion (mandatory — Priority 1 & 7, severity High)
 
-`prefers-reduced-motion: reduce` → opacity-only crossfade at `--lv-dur-fast`, no transform, no
+`prefers-reduced-motion: reduce` → opacity-only crossfade at `--il-dur-fast`, no transform, no
 spring, no stagger. In React this is `useReducedMotion()` from Framer Motion gating every variant;
 in the badge it's a `@media` block inside the shadow root. A user who asks for less motion still
 gets the full verdict — reduced motion never reduces information.
@@ -333,11 +333,11 @@ Base checklist from the generator, plus extension-specific rows (marked ★):
 - [ ] `cursor: pointer` on every clickable element
 - [ ] Hover/state transitions 150–300ms, none instant
 - [ ] Text contrast ≥ 4.5:1 in **both** light and dark
-- [ ] Focus states visible for keyboard nav (`--lv-color-ring`, ≥3:1, never `outline: none` alone)
+- [ ] Focus states visible for keyboard nav (`--il-color-ring`, ≥3:1, never `outline: none` alone)
 - [ ] `prefers-reduced-motion` respected on every animated surface
 - [ ] Verdict readable in greyscale (glyph + shape, not color alone) ★
 - [ ] Badge has `pointer-events: none` and never covers its own link ★
 - [ ] Badge renders identically over a white page and a black page ★
-- [ ] No host-page CSS leaks into the shadow root; no LinkVerify CSS leaks out ★
+- [ ] No host-page CSS leaks into the shadow root; no InertLink CSS leaks out ★
 - [ ] Zero remote resources — no CDN font, script, or image ★
 - [ ] Popup usable at 360×600 without scroll for the default state ★

@@ -1,6 +1,6 @@
 /**
- * LinkVerify design tokens.
- * Source of truth: design-system/linkverify/MASTER.md — edit that first, then mirror here.
+ * InertLink design tokens.
+ * Source of truth: design-system/inertlink/MASTER.md — edit that first, then mirror here.
  *
  * Imported by the popup and options pages. The content-script badge does NOT import this file;
  * it inlines the subset it needs into its shadow root, because a stylesheet link from a content
@@ -9,120 +9,120 @@
 
 :root {
   /* ── Core palette ───────────────────────────────────────────── */
-  --lv-color-primary: #1e293b;
-  --lv-color-on-primary: #ffffff;
-  --lv-color-secondary: #334155;
-  --lv-color-accent: #22c55e;
-  --lv-color-destructive: #ef4444;
+  --il-color-primary: #1e293b;
+  --il-color-on-primary: #ffffff;
+  --il-color-secondary: #334155;
+  --il-color-accent: #22c55e;
+  --il-color-destructive: #ef4444;
   /* Focus ring is sky-400, not the generated slate: slate is invisible on the dark bg. */
-  --lv-color-ring: #38bdf8;
+  --il-color-ring: #38bdf8;
 
   /* ── Surfaces (dark is the default; light overrides below) ──── */
-  --lv-color-bg: #0f172a;
-  --lv-color-surface: #172033;
-  --lv-color-muted: #272f42;
-  --lv-color-fg: #f8fafc;
-  --lv-color-fg-muted: #94a3b8;
-  --lv-color-border: #2b3850;
-  --lv-color-border-strong: #475569;
+  --il-color-bg: #0f172a;
+  --il-color-surface: #172033;
+  --il-color-muted: #272f42;
+  --il-color-fg: #f8fafc;
+  --il-color-fg-muted: #94a3b8;
+  --il-color-border: #2b3850;
+  --il-color-border-strong: #475569;
 
-  /* ── Verdict ramp — dark mode text values (all ≥4.5:1 on --lv-color-bg) ──
+  /* ── Verdict ramp — dark mode text values (all ≥4.5:1 on --il-color-bg) ──
      [adapted] Pulled off the framework-default ramp (#4ade80 / #fbbf24 / #f87171), which reads as
      generic status-chip green-amber-red on any product. These are tuned as a set: the greens and
      reds sit on the warm side of their hues so they separate from the cool slate surface, and
      danger is a signal vermilion rather than a pink-leaning red — it has to mean "stop", not
-     "invalid field". Contrast on --lv-color-bg: jade 9.3:1, amber 10.4:1, vermilion 5.6:1,
+     "invalid field". Contrast on --il-color-bg: jade 9.3:1, amber 10.4:1, vermilion 5.6:1,
      slate 7.1:1. */
-  --lv-verdict-safe: #5bd6a4;
-  --lv-verdict-caution: #f2b441;
-  --lv-verdict-danger: #ff6a55;
-  --lv-verdict-unknown: #93a0b4;
-  --lv-verdict-checking: #93a0b4;
+  --il-verdict-safe: #5bd6a4;
+  --il-verdict-caution: #f2b441;
+  --il-verdict-danger: #ff6a55;
+  --il-verdict-unknown: #93a0b4;
+  --il-verdict-checking: #93a0b4;
 
   /* Fills: saturated, used for solid surfaces, bars, dots. Never body text on dark. */
-  --lv-fill-safe: #1faa78;
-  --lv-fill-caution: #d9931a;
-  --lv-fill-danger: #e0412c;
-  --lv-fill-unknown: #64748b;
+  --il-fill-safe: #1faa78;
+  --il-fill-caution: #d9931a;
+  --il-fill-danger: #e0412c;
+  --il-fill-unknown: #64748b;
 
   /* Ink for text sitting ON a saturated fill — only `danger` uses this. */
-  --lv-on-fill: #180604;
+  --il-on-fill: #180604;
 
   /* ── Typography ─────────────────────────────────────────────── */
   /* No CDN font: MV3 CSP + golden rule 1. Inter ships locally or we fall through. */
-  --lv-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  --il-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
-  --lv-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --il-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
-  --lv-text-verdict: 15px;
-  --lv-text-host: 12px;
-  --lv-text-reason: 12px;
-  --lv-text-title: 16px;
-  --lv-text-body: 14px;
-  --lv-text-label: 11px;
+  --il-text-verdict: 15px;
+  --il-text-host: 12px;
+  --il-text-reason: 12px;
+  --il-text-title: 16px;
+  --il-text-body: 14px;
+  --il-text-label: 11px;
 
   /* ── Spacing ────────────────────────────────────────────────── */
-  --lv-space-xs: 4px;
-  --lv-space-sm: 8px;
-  --lv-space-md: 12px;
-  --lv-space-lg: 16px;
-  --lv-space-xl: 24px;
-  --lv-space-2xl: 32px;
+  --il-space-xs: 4px;
+  --il-space-sm: 8px;
+  --il-space-md: 12px;
+  --il-space-lg: 16px;
+  --il-space-xl: 24px;
+  --il-space-2xl: 32px;
 
   /* ── Radius ─────────────────────────────────────────────────── */
-  --lv-radius-sm: 6px;
-  --lv-radius-md: 8px;
-  --lv-radius-lg: 12px;
-  --lv-radius-pill: 999px;
+  --il-radius-sm: 6px;
+  --il-radius-md: 8px;
+  --il-radius-lg: 12px;
+  --il-radius-pill: 999px;
 
   /* ── Elevation — alphas tuned for arbitrary (often dark) backdrops ── */
-  --lv-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
-  --lv-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --lv-shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.42);
+  --il-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --il-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --il-shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.42);
 
   /* ── Motion — exits faster than enters ──────────────────────── */
-  --lv-dur-fast: 120ms;
-  --lv-dur-base: 180ms;
-  --lv-dur-slow: 260ms;
-  --lv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --lv-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --il-dur-fast: 120ms;
+  --il-dur-base: 180ms;
+  --il-dur-slow: 260ms;
+  --il-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --il-ease-in: cubic-bezier(0.4, 0, 1, 1);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --lv-color-bg: #ffffff;
-    --lv-color-surface: #f8fafc;
-    --lv-color-muted: #f1f5f9;
-    --lv-color-fg: #0f172a;
-    --lv-color-fg-muted: #475569;
-    --lv-color-border: #e2e8f0;
-    --lv-color-border-strong: #cbd5e1;
+    --il-color-bg: #ffffff;
+    --il-color-surface: #f8fafc;
+    --il-color-muted: #f1f5f9;
+    --il-color-fg: #0f172a;
+    --il-color-fg-muted: #475569;
+    --il-color-border: #e2e8f0;
+    --il-color-border-strong: #cbd5e1;
 
     /* Light-mode ink. Same hues, darkened until each clears AA on white:
        jade 5.6:1, amber 6.1:1, vermilion 6.3:1, slate 7.6:1. */
-    --lv-verdict-safe: #0f7a55;
-    --lv-verdict-caution: #8a5206;
-    --lv-verdict-danger: #c0271a;
-    --lv-verdict-unknown: #4a5565;
-    --lv-verdict-checking: #4a5565;
+    --il-verdict-safe: #0f7a55;
+    --il-verdict-caution: #8a5206;
+    --il-verdict-danger: #c0271a;
+    --il-verdict-unknown: #4a5565;
+    --il-verdict-checking: #4a5565;
 
-    --lv-fill-safe: #0f7a55;
-    --lv-fill-caution: #a8660c;
-    --lv-fill-danger: #c0271a;
-    --lv-on-fill: #ffffff;
+    --il-fill-safe: #0f7a55;
+    --il-fill-caution: #a8660c;
+    --il-fill-danger: #c0271a;
+    --il-on-fill: #ffffff;
 
-    --lv-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-    --lv-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.1);
-    --lv-shadow-lg: 0 10px 28px rgba(15, 23, 42, 0.14);
+    --il-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --il-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.1);
+    --il-shadow-lg: 0 10px 28px rgba(15, 23, 42, 0.14);
   }
 }
 
 /* Reduced motion never reduces information — only movement. */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --lv-dur-fast: 1ms;
-    --lv-dur-base: 1ms;
-    --lv-dur-slow: 1ms;
+    --il-dur-fast: 1ms;
+    --il-dur-base: 1ms;
+    --il-dur-slow: 1ms;
   }
 }
 
@@ -135,70 +135,70 @@
 
 body {
   margin: 0;
-  font-family: var(--lv-font-sans);
-  font-size: var(--lv-text-body);
+  font-family: var(--il-font-sans);
+  font-size: var(--il-text-body);
   line-height: 1.5;
-  color: var(--lv-color-fg);
-  background: var(--lv-color-bg);
+  color: var(--il-color-fg);
+  background: var(--il-color-bg);
   -webkit-font-smoothing: antialiased;
 }
 
 :focus-visible {
-  outline: 2px solid var(--lv-color-ring);
+  outline: 2px solid var(--il-color-ring);
   outline-offset: 2px;
-  border-radius: var(--lv-radius-sm);
+  border-radius: var(--il-radius-sm);
 }
 
 /* ── Switch — shared by popup and options ─────────────────────
    A real <input type="checkbox"> stays in the accessibility tree and keeps native keyboard
    behaviour; it is visually replaced, never removed. The thumb is animated by Framer Motion
    (transform only), so this file only owns the resting appearance. */
-.lv-switch {
+.il-switch {
   display: flex;
   align-items: center;
-  gap: var(--lv-space-sm);
+  gap: var(--il-space-sm);
   cursor: pointer;
   user-select: none;
 }
-.lv-switch input {
+.il-switch input {
   position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
 }
-.lv-track {
+.il-track {
   position: relative;
   width: 38px;
   height: 22px;
-  border-radius: var(--lv-radius-pill);
-  background: var(--lv-color-muted);
-  border: 1px solid var(--lv-color-border-strong);
-  transition: background var(--lv-dur-base) var(--lv-ease-out),
-    border-color var(--lv-dur-base) var(--lv-ease-out);
+  border-radius: var(--il-radius-pill);
+  background: var(--il-color-muted);
+  border: 1px solid var(--il-color-border-strong);
+  transition: background var(--il-dur-base) var(--il-ease-out),
+    border-color var(--il-dur-base) var(--il-ease-out);
   flex: none;
 }
-.lv-thumb {
+.il-thumb {
   position: absolute;
   top: 2px;
   left: 2px;
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--lv-color-fg);
+  background: var(--il-color-fg);
 }
-.lv-switch input:checked + .lv-track {
-  background: var(--lv-color-accent);
-  border-color: var(--lv-color-accent);
+.il-switch input:checked + .il-track {
+  background: var(--il-color-accent);
+  border-color: var(--il-color-accent);
 }
-.lv-switch input:checked + .lv-track .lv-thumb {
+.il-switch input:checked + .il-track .il-thumb {
   background: #ffffff;
 }
 /* The visible focus ring must land on the track, since the real input is offscreen. */
-.lv-switch input:focus-visible + .lv-track {
-  outline: 2px solid var(--lv-color-ring);
+.il-switch input:focus-visible + .il-track {
+  outline: 2px solid var(--il-color-ring);
   outline-offset: 2px;
 }
-.lv-switch input:disabled + .lv-track {
+.il-switch input:disabled + .il-track {
   opacity: 0.5;
   cursor: not-allowed;
 }

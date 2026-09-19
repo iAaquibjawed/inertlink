@@ -329,8 +329,8 @@ export async function start() {
   // Read, never fetch. The worker owns the refresh; the content script only consumes what is
   // already on the device (golden rule 5 — no network from the page).
   try {
-    const stored = await chrome.storage.local.get('lv:remote-blocklist');
-    remoteBlocklist = stored?.['lv:remote-blocklist']?.hosts ?? [];
+    const stored = await chrome.storage.local.get('il:remote-blocklist');
+    remoteBlocklist = stored?.['il:remote-blocklist']?.hosts ?? [];
   } catch {
     remoteBlocklist = [];
   }

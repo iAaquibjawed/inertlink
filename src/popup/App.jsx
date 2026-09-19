@@ -168,23 +168,23 @@ export default function App() {
   } else if (granted) statusWord = 'Reload the page to start';
 
   return (
-    <motion.div className="lv-popup" variants={listStagger} initial="initial" animate="animate">
-      <motion.header className="lv-head" variants={item}>
-        <h1 className="lv-wordmark">
-          Link<span>Verify</span>
+    <motion.div className="il-popup" variants={listStagger} initial="initial" animate="animate">
+      <motion.header className="il-head" variants={item}>
+        <h1 className="il-wordmark">
+          Inert<span>Link</span>
         </h1>
 
-        <label className="lv-switch">
+        <label className="il-switch">
           <input
             type="checkbox"
             checked={settings.enabled}
             onChange={(e) => update({ enabled: e.target.checked })}
-            aria-label="Enable LinkVerify"
+            aria-label="Enable InertLink"
           />
-          <span className="lv-track">
+          <span className="il-track">
             {/* layout animation carries the thumb — no left/width animation */}
             <motion.span
-              className="lv-thumb"
+              className="il-thumb"
               layout
               animate={{ x: settings.enabled ? 16 : 0 }}
               transition={
@@ -194,39 +194,39 @@ export default function App() {
           </span>
         </label>
 
-        <button className="lv-iconbtn" onClick={openOptions} title="Settings">
+        <button className="il-iconbtn" onClick={openOptions} title="Settings">
           <Icon name="settings" label="Open settings" />
         </button>
       </motion.header>
 
       <motion.section
-        className="lv-verdict-panel"
+        className="il-verdict-panel"
         data-verdict={status}
         variants={item}
         aria-live="polite"
       >
-        <span className="lv-verdict-mark">
+        <span className="il-verdict-mark">
           <Icon name={VERDICT_ICON[status]} size={22} />
         </span>
-        <span className="lv-verdict-word">{statusWord}</span>
-        <span className="lv-verdict-host">{host || 'No page'}</span>
+        <span className="il-verdict-word">{statusWord}</span>
+        <span className="il-verdict-host">{host || 'No page'}</span>
       </motion.section>
 
       {/* Dead-end cases get an explanation, never a button that cannot work. */}
       {isFile && (
-        <motion.section className="lv-section lv-grant" variants={item}>
-          <p className="lv-grant-copy">
-            LinkVerify can't request access to <strong>file://</strong> pages from here. Serve the
+        <motion.section className="il-section il-grant" variants={item}>
+          <p className="il-grant-copy">
+            InertLink can't request access to <strong>file://</strong> pages from here. Serve the
             page over http instead, or enable file access in{' '}
-            <strong>chrome://extensions → LinkVerify → Details</strong>.
+            <strong>chrome://extensions → InertLink → Details</strong>.
           </p>
         </motion.section>
       )}
 
       {/* Persistence, not activation — it is already running (activeTab). See ADR-0010. */}
       {!restricted && granted === false && settings.enabled && (
-        <motion.section className="lv-section lv-grant" variants={item}>
-          <p className="lv-grant-copy">
+        <motion.section className="il-section il-grant" variants={item}>
+          <p className="il-grant-copy">
             {live ? (
               <>
                 Running on <strong>{host}</strong> for this visit only. Without access, you'll need
@@ -234,28 +234,28 @@ export default function App() {
               </>
             ) : (
               <>
-                LinkVerify only reads pages you allow. Allow <strong>{host}</strong> to see badges
+                InertLink only reads pages you allow. Allow <strong>{host}</strong> to see badges
                 here.
               </>
             )}
           </p>
-          <button className="lv-btn-grant" onClick={grant}>
+          <button className="il-btn-grant" onClick={grant}>
             {live ? `Always run on ${host}` : 'Turn on for this site'}
           </button>
           {/* The answer for anyone who does not want to do this per site, ever again. */}
-          <button className="lv-link lv-grant-all" onClick={grantEverywhere}>
+          <button className="il-link il-grant-all" onClick={grantEverywhere}>
             Or run on every site automatically
           </button>
         </motion.section>
       )}
 
       {everywhere && (
-        <motion.section className="lv-section lv-grant" variants={item}>
-          <p className="lv-grant-copy">
+        <motion.section className="il-section il-grant" variants={item}>
+          <p className="il-grant-copy">
             Running automatically on every site. No need to click the icon.
           </p>
           <button
-            className="lv-link lv-revoke"
+            className="il-link il-revoke"
             onClick={async () => {
               await chrome.permissions.remove({ origins: ALL_SITES }).catch(() => {});
               refresh();
@@ -268,24 +268,24 @@ export default function App() {
 
       {/* Pausing is meaningful the moment it is running, grant or no grant. */}
       {!restricted && (granted || live) && (
-        <motion.section className="lv-section" variants={item}>
-          <p className="lv-overline">This site</p>
+        <motion.section className="il-section" variants={item}>
+          <p className="il-overline">This site</p>
 
-          <div className="lv-row">
-            <span className="lv-row-label">
+          <div className="il-row">
+            <span className="il-row-label">
               <Icon name="pause" size={16} />
               Pause on {host}
             </span>
-            <label className="lv-switch">
+            <label className="il-switch">
               <input
                 type="checkbox"
                 checked={paused}
                 onChange={(e) => toggleInList('pausedHosts', host, e.target.checked)}
-                aria-label={`Pause LinkVerify on ${host}`}
+                aria-label={`Pause InertLink on ${host}`}
               />
-              <span className="lv-track">
+              <span className="il-track">
                 <motion.span
-                  className="lv-thumb"
+                  className="il-thumb"
                   animate={{ x: paused ? 16 : 0 }}
                   transition={
                     reduced ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 34 }
@@ -298,22 +298,22 @@ export default function App() {
           {/* Only offered when the grant is site-specific — removing one host from an
               all-sites grant would do nothing, and a button that does nothing is a lie. */}
           {granted && !everywhere && (
-            <button className="lv-link lv-revoke" onClick={revoke}>
+            <button className="il-link il-revoke" onClick={revoke}>
               Remove access to {host}
             </button>
           )}
         </motion.section>
       )}
 
-      <motion.section className="lv-section" variants={item}>
-        <p className="lv-overline">This tab</p>
-        <div className="lv-stats">
+      <motion.section className="il-section" variants={item}>
+        <p className="il-overline">This tab</p>
+        <div className="il-stats">
           {['safe', 'caution', 'danger'].map((key) => (
-            <div className="lv-stat" data-verdict={key} key={key}>
-              <div className="lv-stat-value">{counts[key] ?? 0}</div>
+            <div className="il-stat" data-verdict={key} key={key}>
+              <div className="il-stat-value">{counts[key] ?? 0}</div>
               {/* dot is redundant reinforcement; the word carries the meaning */}
-              <div className="lv-stat-label">
-                <span className="lv-dot" aria-hidden="true" />
+              <div className="il-stat-label">
+                <span className="il-dot" aria-hidden="true" />
                 {VERDICT_WORD[key]}
               </div>
             </div>
@@ -321,12 +321,12 @@ export default function App() {
         </div>
       </motion.section>
 
-      <motion.footer className="lv-foot" variants={item}>
+      <motion.footer className="il-foot" variants={item}>
         <Icon name={settings.onlineChecks ? 'globe' : 'wifiOff'} size={14} />
         {settings.onlineChecks
           ? 'Borderline links are checked online'
           : 'Local checks only — nothing leaves this device'}
-        <button className="lv-link" onClick={openOptions}>
+        <button className="il-link" onClick={openOptions}>
           Settings
         </button>
       </motion.footer>

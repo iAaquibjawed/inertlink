@@ -49,11 +49,11 @@ function HostList({ id, label, help, hosts, placeholder, onAdd, onRemove }) {
 
   return (
     <>
-      <form className="lv-list-add" onSubmit={submit}>
-        <label className="lv-field" style={{ flex: 1, marginBottom: 0 }}>
-          <span className="lv-field-label">{label}</span>
+      <form className="il-list-add" onSubmit={submit}>
+        <label className="il-field" style={{ flex: 1, marginBottom: 0 }}>
+          <span className="il-field-label">{label}</span>
           <input
-            className="lv-input"
+            className="il-input"
             placeholder={placeholder}
             aria-describedby={`${id}-help`}
             value={draft}
@@ -65,24 +65,24 @@ function HostList({ id, label, help, hosts, placeholder, onAdd, onRemove }) {
             autoComplete="off"
           />
         </label>
-        <button className="lv-btn lv-btn-ghost" style={{ alignSelf: 'flex-end' }} type="submit">
+        <button className="il-btn il-btn-ghost" style={{ alignSelf: 'flex-end' }} type="submit">
           <Icon name="plus" size={16} />
           Add
         </button>
       </form>
-      <p className="lv-field-help" id={`${id}-help`} role={error ? 'alert' : undefined}>
+      <p className="il-field-help" id={`${id}-help`} role={error ? 'alert' : undefined}>
         {error || help}
       </p>
 
       {hosts.length === 0 ? (
-        <p className="lv-empty">No hosts yet.</p>
+        <p className="il-empty">No hosts yet.</p>
       ) : (
-        <motion.ul className="lv-list" variants={listStagger} initial="initial" animate="animate">
+        <motion.ul className="il-list" variants={listStagger} initial="initial" animate="animate">
           <AnimatePresence initial={false}>
             {hosts.map((h) => (
-              <motion.li className="lv-list-item" key={h} variants={item} layout={!reduced}>
+              <motion.li className="il-list-item" key={h} variants={item} layout={!reduced}>
                 <span>{h}</span>
-                <button className="lv-iconbtn-sm" onClick={() => onRemove(h)}>
+                <button className="il-iconbtn-sm" onClick={() => onRemove(h)}>
                   <Icon name="trash" size={15} label={`Remove ${h}`} />
                 </button>
               </motion.li>
@@ -133,31 +133,31 @@ export default function App() {
   const { sensitivity, onlineChecks } = settings;
 
   return (
-    <motion.main className="lv-options" variants={listStagger} initial="initial" animate="animate">
-      <motion.header className="lv-page-head" variants={item}>
-        <h1 className="lv-page-title">LinkVerify settings</h1>
-        <p className="lv-page-sub">
+    <motion.main className="il-options" variants={listStagger} initial="initial" animate="animate">
+      <motion.header className="il-page-head" variants={item}>
+        <h1 className="il-page-title">InertLink settings</h1>
+        <p className="il-page-sub">
           Link safety is checked on your device. Nothing is sent anywhere unless you turn it on
           below.
         </p>
       </motion.header>
 
-      {/* First card on the page: nothing below it matters if LinkVerify is not running anywhere.
+      {/* First card on the page: nothing below it matters if InertLink is not running anywhere.
           This is also where the "why do I have to click the icon every time?" question is
           answered — see ADR-0010 for why clicking is the default. */}
-      <motion.section className="lv-card" variants={item}>
-        <h2 className="lv-card-title">Where LinkVerify runs</h2>
-        <p className="lv-card-help">
-          By default LinkVerify runs only when you click its toolbar icon, on that tab, for that
+      <motion.section className="il-card" variants={item}>
+        <h2 className="il-card-title">Where InertLink runs</h2>
+        <p className="il-card-help">
+          By default InertLink runs only when you click its toolbar icon, on that tab, for that
           visit. Allow it to run on its own below.
         </p>
 
-        <div className="lv-toggle-row">
-          <span className="lv-toggle-copy">
+        <div className="il-toggle-row">
+          <span className="il-toggle-copy">
             <strong>Run on every site automatically</strong>
-            <span>No clicking. LinkVerify can read the pages you visit to check their links.</span>
+            <span>No clicking. InertLink can read the pages you visit to check their links.</span>
           </span>
-          <label className="lv-switch">
+          <label className="il-switch">
             <input
               type="checkbox"
               checked={sites.everywhere}
@@ -171,9 +171,9 @@ export default function App() {
                 }
               }}
             />
-            <span className="lv-track">
+            <span className="il-track">
               <motion.span
-                className="lv-thumb"
+                className="il-thumb"
                 animate={{ x: sites.everywhere ? 16 : 0 }}
                 transition={
                   reduced ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 34 }
@@ -185,19 +185,19 @@ export default function App() {
 
         {!sites.everywhere && (
           <>
-            <p className="lv-field-help" style={{ marginTop: 'var(--lv-space-md)' }}>
+            <p className="il-field-help" style={{ marginTop: 'var(--il-space-md)' }}>
               Sites you've allowed individually. Add them from the toolbar popup.
             </p>
             {sites.origins.length === 0 ? (
-              <p className="lv-empty">No sites allowed yet.</p>
+              <p className="il-empty">No sites allowed yet.</p>
             ) : (
-              <motion.ul className="lv-list" variants={listStagger} initial="initial" animate="animate">
+              <motion.ul className="il-list" variants={listStagger} initial="initial" animate="animate">
                 <AnimatePresence initial={false}>
                   {sites.origins.map((o) => (
-                    <motion.li className="lv-list-item" key={o} variants={item} layout={!reduced}>
+                    <motion.li className="il-list-item" key={o} variants={item} layout={!reduced}>
                       <span>{o.replace(/^https?:\/\//, '').replace(/\/\*$/, '')}</span>
                       <button
-                        className="lv-iconbtn-sm"
+                        className="il-iconbtn-sm"
                         onClick={() =>
                           chrome.permissions.remove({ origins: [o] }, () => refreshSites())
                         }
@@ -213,40 +213,40 @@ export default function App() {
         )}
       </motion.section>
 
-      <motion.section className="lv-card" variants={item}>
-        <h2 className="lv-card-title">Sensitivity</h2>
-        <p className="lv-card-help">How eagerly LinkVerify raises a warning.</p>
+      <motion.section className="il-card" variants={item}>
+        <h2 className="il-card-title">Sensitivity</h2>
+        <p className="il-card-help">How eagerly InertLink raises a warning.</p>
 
-        <div className="lv-segmented" role="group" aria-label="Sensitivity">
+        <div className="il-segmented" role="group" aria-label="Sensitivity">
           {Object.values(SENSITIVITY).map((level) => {
             const active = sensitivity === level;
             return (
               <button
                 key={level}
-                className="lv-seg"
+                className="il-seg"
                 aria-pressed={active}
                 onClick={() => update({ sensitivity: level })}
               >
                 {active && (
                   <motion.span
-                    className="lv-seg-pill"
-                    layoutId="lv-seg-pill"
+                    className="il-seg-pill"
+                    layoutId="il-seg-pill"
                     transition={
                       reduced ? { duration: 0 } : { type: 'spring', stiffness: 460, damping: 36 }
                     }
                   />
                 )}
-                <span className="lv-seg-label">{level[0].toUpperCase() + level.slice(1)}</span>
+                <span className="il-seg-label">{level[0].toUpperCase() + level.slice(1)}</span>
               </button>
             );
           })}
         </div>
-        <p className="lv-seg-note">{SENSITIVITY_COPY[sensitivity]}</p>
+        <p className="il-seg-note">{SENSITIVITY_COPY[sensitivity]}</p>
       </motion.section>
 
-      <motion.section className="lv-card" variants={item}>
-        <h2 className="lv-card-title">Always trust</h2>
-        <p className="lv-card-help">
+      <motion.section className="il-card" variants={item}>
+        <h2 className="il-card-title">Always trust</h2>
+        <p className="il-card-help">
           These hosts are marked safe instantly and are never looked up online.
         </p>
         <HostList
@@ -260,9 +260,9 @@ export default function App() {
         />
       </motion.section>
 
-      <motion.section className="lv-card" variants={item}>
-        <h2 className="lv-card-title">Always warn</h2>
-        <p className="lv-card-help">These hosts are always flagged as dangerous.</p>
+      <motion.section className="il-card" variants={item}>
+        <h2 className="il-card-title">Always warn</h2>
+        <p className="il-card-help">These hosts are always flagged as dangerous.</p>
         <HostList
           id="blocklist"
           label="Add a host to your blocklist"
@@ -275,18 +275,18 @@ export default function App() {
       </motion.section>
 
       {settings.pausedHosts.length > 0 && (
-        <motion.section className="lv-card" variants={item}>
-          <h2 className="lv-card-title">Paused sites</h2>
-          <p className="lv-card-help">
-            LinkVerify does nothing on these sites. Pause and resume from the toolbar popup.
+        <motion.section className="il-card" variants={item}>
+          <h2 className="il-card-title">Paused sites</h2>
+          <p className="il-card-help">
+            InertLink does nothing on these sites. Pause and resume from the toolbar popup.
           </p>
-          <motion.ul className="lv-list" variants={listStagger} initial="initial" animate="animate">
+          <motion.ul className="il-list" variants={listStagger} initial="initial" animate="animate">
             <AnimatePresence initial={false}>
               {settings.pausedHosts.map((h) => (
-                <motion.li className="lv-list-item" key={h} variants={item} layout={!reduced}>
+                <motion.li className="il-list-item" key={h} variants={item} layout={!reduced}>
                   <span>{h}</span>
                   <button
-                    className="lv-iconbtn-sm"
+                    className="il-iconbtn-sm"
                     onClick={() => toggleInList('pausedHosts', h, false)}
                   >
                     <Icon name="trash" size={15} label={`Resume on ${h}`} />
@@ -298,27 +298,27 @@ export default function App() {
         </motion.section>
       )}
 
-      <motion.section className="lv-card" variants={item}>
-        <h2 className="lv-card-title">Online reputation checks</h2>
-        <p className="lv-card-help">
+      <motion.section className="il-card" variants={item}>
+        <h2 className="il-card-title">Online reputation checks</h2>
+        <p className="il-card-help">
           Optional second opinion for links the local checks can't settle.
         </p>
 
-        <div className="lv-toggle-row">
-          <span className="lv-toggle-copy">
+        <div className="il-toggle-row">
+          <span className="il-toggle-copy">
             <strong>Check borderline links online</strong>
             <span>Sends the hostname only — never the full address.</span>
           </span>
-          <label className="lv-switch">
+          <label className="il-switch">
             <input
               type="checkbox"
               checked={onlineChecks}
               onChange={(e) => update({ onlineChecks: e.target.checked })}
               aria-label="Check borderline links online"
             />
-            <span className="lv-track">
+            <span className="il-track">
               <motion.span
-                className="lv-thumb"
+                className="il-thumb"
                 animate={{ x: onlineChecks ? 16 : 0 }}
                 transition={
                   reduced ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 34 }
@@ -332,16 +332,16 @@ export default function App() {
         <AnimatePresence initial={false}>
           {onlineChecks && (
             <motion.div
-              className="lv-disclosure"
+              className="il-disclosure"
               variants={respectMotion(collapse, reduced)}
               initial="initial"
               animate="animate"
               exit="exit"
             >
-              <label className="lv-field" style={{ marginTop: 'var(--lv-space-lg)' }}>
-                <span className="lv-field-label">Google Safe Browsing API key</span>
+              <label className="il-field" style={{ marginTop: 'var(--il-space-lg)' }}>
+                <span className="il-field-label">Google Safe Browsing API key</span>
                 <input
-                  className="lv-input"
+                  className="il-input"
                   type="password"
                   placeholder="Paste your key"
                   autoComplete="off"
@@ -349,16 +349,16 @@ export default function App() {
                   value={settings.apiKey}
                   onChange={(e) => update({ apiKey: e.target.value.trim() })}
                 />
-                <span className="lv-field-help">
+                <span className="il-field-help">
                   Stored in your browser profile. Requests are made by the extension's background
                   worker, never by the page you're viewing.
                 </span>
               </label>
 
-              <label className="lv-field">
-                <span className="lv-field-label">Blocklist feed URL (optional)</span>
+              <label className="il-field">
+                <span className="il-field-label">Blocklist feed URL (optional)</span>
                 <input
-                  className="lv-input"
+                  className="il-input"
                   type="url"
                   placeholder="https://example.com/blocklist.json"
                   autoComplete="off"
@@ -366,7 +366,7 @@ export default function App() {
                   value={settings.blocklistUrl}
                   onChange={(e) => update({ blocklistUrl: e.target.value.trim() })}
                 />
-                <span className="lv-field-help">
+                <span className="il-field-help">
                   A JSON list of hosts, refreshed weekly in the background. Leave empty to use only
                   the list bundled with the extension.
                 </span>
@@ -377,19 +377,19 @@ export default function App() {
 
         {/* The callout states what is true *right now*. A privacy promise that doesn't track
             the actual setting is worse than no promise. */}
-        <p className="lv-callout">
+        <p className="il-callout">
           <Icon name={onlineChecks ? 'globe' : 'wifiOff'} size={16} />
           <span>
             {onlineChecks
               ? 'Hostnames of borderline links are sent to your chosen provider, and only when the local checks are inconclusive. Results are cached, so a host is never sent twice.'
-              : 'LinkVerify makes no network requests at all. Every check runs against data bundled in the extension.'}
+              : 'InertLink makes no network requests at all. Every check runs against data bundled in the extension.'}
           </span>
         </p>
       </motion.section>
 
-      <motion.section className="lv-card" variants={item}>
-        <h2 className="lv-card-title">Stored verdicts</h2>
-        <p className="lv-card-help">
+      <motion.section className="il-card" variants={item}>
+        <h2 className="il-card-title">Stored verdicts</h2>
+        <p className="il-card-help">
           Results are cached by hostname so the same site is never looked up twice.
           {cacheCount !== null && (
             <>
@@ -400,7 +400,7 @@ export default function App() {
             </>
           )}
         </p>
-        <button className="lv-btn lv-btn-danger" onClick={doClearCache} disabled={cacheCount === 0}>
+        <button className="il-btn il-btn-danger" onClick={doClearCache} disabled={cacheCount === 0}>
           <Icon name="trash" size={16} />
           Clear cached verdicts
         </button>

@@ -1,4 +1,4 @@
-/* Popup — 360px. Design: design-system/linkverify/MASTER.md §4.2.
+/* Popup — 360px. Design: design-system/inertlink/MASTER.md §4.2.
    Order is status → controls → evidence. One bold focal element: the verdict. */
 
 body {
@@ -6,215 +6,215 @@ body {
   min-height: 220px;
 }
 
-.lv-popup {
+.il-popup {
   display: flex;
   flex-direction: column;
 }
 
 /* ── Header ─────────────────────────────────────────────────── */
-.lv-head {
+.il-head {
   display: flex;
   align-items: center;
-  gap: var(--lv-space-sm);
-  padding: var(--lv-space-md) var(--lv-space-lg);
-  border-bottom: 1px solid var(--lv-color-border);
+  gap: var(--il-space-sm);
+  padding: var(--il-space-md) var(--il-space-lg);
+  border-bottom: 1px solid var(--il-color-border);
 }
 
-.lv-wordmark {
-  font-size: var(--lv-text-title);
+.il-wordmark {
+  font-size: var(--il-text-title);
   font-weight: 600;
   letter-spacing: -0.01em;
   margin: 0;
   flex: 1;
 }
-.lv-wordmark span {
-  color: var(--lv-color-fg-muted);
+.il-wordmark span {
+  color: var(--il-color-fg-muted);
   font-weight: 400;
 }
 
-.lv-iconbtn {
+.il-iconbtn {
   display: grid;
   place-items: center;
   width: 32px;
   height: 32px;
   border: 0;
-  border-radius: var(--lv-radius-sm);
+  border-radius: var(--il-radius-sm);
   background: transparent;
-  color: var(--lv-color-fg-muted);
+  color: var(--il-color-fg-muted);
   cursor: pointer;
-  transition: background var(--lv-dur-base) var(--lv-ease-out),
-    color var(--lv-dur-base) var(--lv-ease-out);
+  transition: background var(--il-dur-base) var(--il-ease-out),
+    color var(--il-dur-base) var(--il-ease-out);
 }
-.lv-iconbtn:hover {
-  background: var(--lv-color-muted);
-  color: var(--lv-color-fg);
+.il-iconbtn:hover {
+  background: var(--il-color-muted);
+  color: var(--il-color-fg);
 }
 
 /* Switch styles live in ../shared/tokens.css — both pages use them. */
 
 /* ── Verdict panel — the focal element ──────────────────────── */
-.lv-verdict-panel {
+.il-verdict-panel {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: var(--lv-space-xs) var(--lv-space-md);
+  gap: var(--il-space-xs) var(--il-space-md);
   align-items: center;
-  padding: var(--lv-space-lg);
-  border-bottom: 1px solid var(--lv-color-border);
+  padding: var(--il-space-lg);
+  border-bottom: 1px solid var(--il-color-border);
 }
 
-.lv-verdict-panel[data-verdict='safe'] {
-  --lv-v: var(--lv-verdict-safe);
+.il-verdict-panel[data-verdict='safe'] {
+  --il-v: var(--il-verdict-safe);
 }
-.lv-verdict-panel[data-verdict='caution'] {
-  --lv-v: var(--lv-verdict-caution);
+.il-verdict-panel[data-verdict='caution'] {
+  --il-v: var(--il-verdict-caution);
 }
-.lv-verdict-panel[data-verdict='danger'] {
-  --lv-v: var(--lv-verdict-danger);
+.il-verdict-panel[data-verdict='danger'] {
+  --il-v: var(--il-verdict-danger);
 }
-.lv-verdict-panel[data-verdict='unknown'],
-.lv-verdict-panel[data-verdict='checking'] {
-  --lv-v: var(--lv-verdict-unknown);
+.il-verdict-panel[data-verdict='unknown'],
+.il-verdict-panel[data-verdict='checking'] {
+  --il-v: var(--il-verdict-unknown);
 }
 
-.lv-verdict-mark {
+.il-verdict-mark {
   grid-row: 1 / span 2;
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: var(--lv-radius-lg);
-  color: var(--lv-v);
-  background: color-mix(in srgb, var(--lv-v) 14%, transparent);
+  border-radius: var(--il-radius-lg);
+  color: var(--il-v);
+  background: color-mix(in srgb, var(--il-v) 14%, transparent);
   /* Shape reinforcement: danger gets a ring, so verdict survives greyscale. */
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lv-v) 40%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--il-v) 40%, transparent);
 }
-.lv-verdict-panel[data-verdict='danger'] .lv-verdict-mark {
-  box-shadow: inset 0 0 0 2px var(--lv-v);
+.il-verdict-panel[data-verdict='danger'] .il-verdict-mark {
+  box-shadow: inset 0 0 0 2px var(--il-v);
 }
 
-.lv-verdict-word {
+.il-verdict-word {
   font-size: 20px;
   font-weight: 650;
   letter-spacing: -0.01em;
-  color: var(--lv-v);
+  color: var(--il-v);
   align-self: end;
 }
-.lv-verdict-host {
-  font-family: var(--lv-font-mono);
-  font-size: var(--lv-text-host);
-  color: var(--lv-color-fg-muted);
+.il-verdict-host {
+  font-family: var(--il-font-mono);
+  font-size: var(--il-text-host);
+  color: var(--il-color-fg-muted);
   align-self: start;
   word-break: break-all;
 }
 
 /* ── Rows ───────────────────────────────────────────────────── */
-.lv-section {
-  padding: var(--lv-space-md) var(--lv-space-lg);
-  border-bottom: 1px solid var(--lv-color-border);
+.il-section {
+  padding: var(--il-space-md) var(--il-space-lg);
+  border-bottom: 1px solid var(--il-color-border);
 }
-.lv-section:last-of-type {
+.il-section:last-of-type {
   border-bottom: 0;
 }
 
-.lv-overline {
-  font-size: var(--lv-text-label);
+.il-overline {
+  font-size: var(--il-text-label);
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--lv-color-fg-muted);
-  margin: 0 0 var(--lv-space-sm);
+  color: var(--il-color-fg-muted);
+  margin: 0 0 var(--il-space-sm);
 }
 
-.lv-row {
+.il-row {
   display: flex;
   align-items: center;
-  gap: var(--lv-space-sm);
+  gap: var(--il-space-sm);
   min-height: 32px;
 }
-.lv-row + .lv-row {
-  margin-top: var(--lv-space-xs);
+.il-row + .il-row {
+  margin-top: var(--il-space-xs);
 }
-.lv-row-label {
+.il-row-label {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: var(--lv-space-sm);
-  color: var(--lv-color-fg);
+  gap: var(--il-space-sm);
+  color: var(--il-color-fg);
 }
-.lv-row-label svg {
-  color: var(--lv-color-fg-muted);
+.il-row-label svg {
+  color: var(--il-color-fg-muted);
   flex: none;
 }
 
 /* ── Session counts ─────────────────────────────────────────── */
-.lv-stats {
+.il-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--lv-space-sm);
+  gap: var(--il-space-sm);
 }
-.lv-stat {
-  padding: var(--lv-space-sm) var(--lv-space-md);
-  border: 1px solid var(--lv-color-border);
-  border-radius: var(--lv-radius-md);
-  background: var(--lv-color-surface);
+.il-stat {
+  padding: var(--il-space-sm) var(--il-space-md);
+  border: 1px solid var(--il-color-border);
+  border-radius: var(--il-radius-md);
+  background: var(--il-color-surface);
 }
-.lv-stat-value {
+.il-stat-value {
   font-size: 18px;
   font-weight: 650;
   letter-spacing: -0.01em;
   line-height: 1.1;
 }
-.lv-stat-label {
+.il-stat-label {
   display: flex;
   align-items: center;
-  gap: var(--lv-space-xs);
-  font-size: var(--lv-text-label);
-  color: var(--lv-color-fg-muted);
+  gap: var(--il-space-xs);
+  font-size: var(--il-text-label);
+  color: var(--il-color-fg-muted);
   margin-top: 2px;
 }
 /* The dot is a redundant cue, not the only one — the label word carries the meaning. */
-.lv-dot {
+.il-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   flex: none;
 }
-.lv-stat[data-verdict='safe'] .lv-stat-value {
-  color: var(--lv-verdict-safe);
+.il-stat[data-verdict='safe'] .il-stat-value {
+  color: var(--il-verdict-safe);
 }
-.lv-stat[data-verdict='safe'] .lv-dot {
-  background: var(--lv-fill-safe);
+.il-stat[data-verdict='safe'] .il-dot {
+  background: var(--il-fill-safe);
 }
-.lv-stat[data-verdict='caution'] .lv-stat-value {
-  color: var(--lv-verdict-caution);
+.il-stat[data-verdict='caution'] .il-stat-value {
+  color: var(--il-verdict-caution);
 }
-.lv-stat[data-verdict='caution'] .lv-dot {
-  background: var(--lv-fill-caution);
+.il-stat[data-verdict='caution'] .il-dot {
+  background: var(--il-fill-caution);
 }
-.lv-stat[data-verdict='danger'] .lv-stat-value {
-  color: var(--lv-verdict-danger);
+.il-stat[data-verdict='danger'] .il-stat-value {
+  color: var(--il-verdict-danger);
 }
-.lv-stat[data-verdict='danger'] .lv-dot {
-  background: var(--lv-fill-danger);
+.il-stat[data-verdict='danger'] .il-dot {
+  background: var(--il-fill-danger);
 }
 
 /* ── Footer ─────────────────────────────────────────────────── */
-.lv-foot {
+.il-foot {
   display: flex;
   align-items: center;
-  gap: var(--lv-space-sm);
-  padding: var(--lv-space-md) var(--lv-space-lg);
-  border-top: 1px solid var(--lv-color-border);
-  background: var(--lv-color-surface);
-  font-size: var(--lv-text-label);
-  color: var(--lv-color-fg-muted);
+  gap: var(--il-space-sm);
+  padding: var(--il-space-md) var(--il-space-lg);
+  border-top: 1px solid var(--il-color-border);
+  background: var(--il-color-surface);
+  font-size: var(--il-text-label);
+  color: var(--il-color-fg-muted);
 }
-.lv-foot svg {
+.il-foot svg {
   flex: none;
 }
-.lv-link {
+.il-link {
   margin-left: auto;
-  color: var(--lv-color-fg);
+  color: var(--il-color-fg);
   background: none;
   border: 0;
   padding: 0;
@@ -228,57 +228,57 @@ body {
    Shown only when the current site has not been granted. It is the one control that makes the
    product work at all (ADR-0003), so it gets the only filled button in the popup — everything
    else here is a toggle or a quiet link. */
-.lv-grant {
-  background: var(--lv-color-muted);
+.il-grant {
+  background: var(--il-color-muted);
 }
 
-.lv-grant-copy {
-  margin: 0 0 var(--lv-space-md);
-  font-size: var(--lv-text-body);
+.il-grant-copy {
+  margin: 0 0 var(--il-space-md);
+  font-size: var(--il-text-body);
   line-height: 1.45;
-  color: var(--lv-color-fg-muted);
+  color: var(--il-color-fg-muted);
 }
-.lv-grant-copy strong {
-  color: var(--lv-color-fg);
+.il-grant-copy strong {
+  color: var(--il-color-fg);
   font-weight: 600;
   word-break: break-all;
 }
 
-.lv-btn-grant {
+.il-btn-grant {
   width: 100%;
-  padding: var(--lv-space-sm) var(--lv-space-md);
+  padding: var(--il-space-sm) var(--il-space-md);
   border: 0;
-  border-radius: var(--lv-radius-sm);
-  background: var(--lv-color-accent);
+  border-radius: var(--il-radius-sm);
+  background: var(--il-color-accent);
   /* Near-black rather than white: #22c55e is a light green, and white on it fails AA in both
      themes. Verified ~8:1 (ADR-0005 called out the same mistake in the generated system). */
   color: #04121c;
   font: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: filter var(--lv-dur-base) var(--lv-ease-out);
+  transition: filter var(--il-dur-base) var(--il-ease-out);
 }
-.lv-btn-grant:hover {
+.il-btn-grant:hover {
   filter: brightness(1.08);
 }
 
 /* Secondary escape hatch under the primary grant. Same visual weight as any other quiet link —
    broader access should never be the *easier* thing to click. */
-.lv-grant-all {
+.il-grant-all {
   display: block;
-  margin: var(--lv-space-sm) auto 0 0;
-  font-size: var(--lv-text-label);
-  color: var(--lv-color-fg-muted);
+  margin: var(--il-space-sm) auto 0 0;
+  font-size: var(--il-text-label);
+  color: var(--il-color-fg-muted);
   text-align: left;
 }
 
 /* Destructive, but not a primary action — a quiet link, not a red button. Removing access is
    reversible in one click, so it does not need to shout. */
-.lv-revoke {
-  /* .lv-link pushes itself right with margin-left:auto for the footer. Undo it here. */
-  margin: var(--lv-space-sm) auto 0 0;
-  font-size: var(--lv-text-label);
-  color: var(--lv-color-fg-muted);
+.il-revoke {
+  /* .il-link pushes itself right with margin-left:auto for the footer. Undo it here. */
+  margin: var(--il-space-sm) auto 0 0;
+  font-size: var(--il-text-label);
+  color: var(--il-color-fg-muted);
   word-break: break-all;
   text-align: left;
 }

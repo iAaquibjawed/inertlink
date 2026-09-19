@@ -1,7 +1,7 @@
 /**
  * The hover badge. Renders a verdict next to the cursor, over someone else's page.
  *
- * Design contract (design-system/linkverify/MASTER.md §4.1) and golden rule 7:
+ * Design contract (design-system/inertlink/MASTER.md §4.1) and golden rule 7:
  *   • shadow DOM + `all: initial` — host CSS can't reach in, our CSS can't leak out
  *   • `pointer-events: none` — never intercepts a click, never steals focus
  *   • never covers the link it describes; flips to stay inside the viewport
@@ -15,7 +15,7 @@
  * it to the engine in Phase 2.
  */
 
-const HOST_ID = 'linkverify-badge-root';
+const HOST_ID = 'inertlink-badge-root';
 const OFFSET_X = 14;
 const OFFSET_Y = 18;
 const MAX_WIDTH = 280;
@@ -51,7 +51,7 @@ const LABELS = {
 const STYLE = `
   :host { all: initial; }
 
-  .lv-badge {
+  .il-badge {
     position: fixed;
     z-index: 2147483647;
     top: 0; left: 0;
@@ -67,9 +67,9 @@ const STYLE = `
     /* One silhouette, always. Radius used to change with the presence of a reason line, which
        looked like it meant something and didn't (MASTER.md §4.1). */
     border-radius: 10px;
-    border: 1px solid var(--lv-edge);
-    background: var(--lv-surface);
-    color: var(--lv-fg);
+    border: 1px solid var(--il-edge);
+    background: var(--il-surface);
+    color: var(--il-fg);
     box-shadow: 0 6px 20px -6px rgba(0,0,0,.5), 0 1px 2px rgba(0,0,0,.3);
 
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -86,32 +86,32 @@ const STYLE = `
   /* ── Severity ladder: quiet → tinted → solid ────────────────────────────────
      Carried by the surface, so it reads in peripheral vision and in greyscale.
      No extra bars, outlines, or rings — those said the same thing three more times. */
-  .lv-badge[data-verdict="caution"] {
-    --lv-surface: var(--lv-tint);
-    --lv-edge: var(--lv-edge-accent);
+  .il-badge[data-verdict="caution"] {
+    --il-surface: var(--il-tint);
+    --il-edge: var(--il-edge-accent);
   }
-  .lv-badge[data-verdict="danger"] {
-    --lv-surface: var(--lv-accent-fill);
-    --lv-edge: transparent;
-    --lv-fg: var(--lv-on-fill);
-    --lv-fg-muted: var(--lv-on-fill-muted);
-    --lv-accent: var(--lv-on-fill);
-    box-shadow: 0 8px 24px -6px var(--lv-danger-glow), 0 1px 2px rgba(0,0,0,.35);
+  .il-badge[data-verdict="danger"] {
+    --il-surface: var(--il-accent-fill);
+    --il-edge: transparent;
+    --il-fg: var(--il-on-fill);
+    --il-fg-muted: var(--il-on-fill-muted);
+    --il-accent: var(--il-on-fill);
+    box-shadow: 0 8px 24px -6px var(--il-danger-glow), 0 1px 2px rgba(0,0,0,.35);
   }
 
   /* ── Eyebrow: glyph + verdict word ──────────────────────────────────────────
      The word is small because by the time you read it, the surface has already told you.
      It stays because colour alone must never be the only encoding. */
-  .lv-eyebrow {
+  .il-eyebrow {
     display: flex;
     align-items: center;
     gap: 5px;
-    color: var(--lv-accent);
+    color: var(--il-accent);
   }
-  .lv-icon { width: 13px; height: 13px; flex: none; }
-  .lv-icon svg { width: 100%; height: 100%; display: block; fill: none; stroke: currentColor;
+  .il-icon { width: 13px; height: 13px; flex: none; }
+  .il-icon svg { width: 100%; height: 100%; display: block; fill: none; stroke: currentColor;
                  stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
-  .lv-verdict {
+  .il-verdict {
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .09em;
@@ -120,71 +120,71 @@ const STYLE = `
 
   /* ── Host: the hero. The owner is what you need to read, so it is what is legible.
      Mono is load-bearing, not styling: rn/m and 1/l are the attack (MASTER.md §4.1). ── */
-  .lv-host {
+  .il-host {
     font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
     font-size: 13px;
     font-weight: 400;
     letter-spacing: -.01em;
-    color: var(--lv-fg-muted);
+    color: var(--il-fg-muted);
     word-break: break-all;
   }
   /* The registrable domain — who actually owns this — at full contrast and weight.
      Everything before it is a prefix anyone can register, and drops back. */
-  .lv-owner { color: var(--lv-fg); font-weight: 600; }
+  .il-owner { color: var(--il-fg); font-weight: 600; }
 
-  .lv-reason { font-size: 11.5px; color: var(--lv-fg-muted); }
-  .lv-hidden { display: none; }
+  .il-reason { font-size: 11.5px; color: var(--il-fg-muted); }
+  .il-hidden { display: none; }
 
   /* checking: the only motion that loops, and it stops the moment a verdict lands. */
-  .lv-badge[data-verdict="checking"] .lv-icon { animation: lv-spin 900ms linear infinite; }
-  @keyframes lv-spin { to { transform: rotate(360deg); } }
+  .il-badge[data-verdict="checking"] .il-icon { animation: il-spin 900ms linear infinite; }
+  @keyframes il-spin { to { transform: rotate(360deg); } }
 
   /* Dark is the default; light follows the user, not the page. */
-  .lv-badge {
-    --lv-surface: #12151c;
-    --lv-fg: #f4f6fa;
-    --lv-fg-muted: #98a3b5;
-    --lv-edge: #262c38;
-    --lv-on-fill: #180604;
-    --lv-on-fill-muted: rgba(24,6,4,.72);
-    --lv-danger-glow: rgba(224,65,44,.45);
+  .il-badge {
+    --il-surface: #12151c;
+    --il-fg: #f4f6fa;
+    --il-fg-muted: #98a3b5;
+    --il-edge: #262c38;
+    --il-on-fill: #180604;
+    --il-on-fill-muted: rgba(24,6,4,.72);
+    --il-danger-glow: rgba(224,65,44,.45);
   }
-  .lv-badge[data-verdict="safe"] { --lv-accent: #5bd6a4; }
-  .lv-badge[data-verdict="caution"] {
-    --lv-accent: #f2b441;
-    --lv-tint: #1e1a12;
-    --lv-edge-accent: #4a3a1a;
+  .il-badge[data-verdict="safe"] { --il-accent: #5bd6a4; }
+  .il-badge[data-verdict="caution"] {
+    --il-accent: #f2b441;
+    --il-tint: #1e1a12;
+    --il-edge-accent: #4a3a1a;
   }
-  .lv-badge[data-verdict="danger"] { --lv-accent-fill: #e0412c; }
-  .lv-badge[data-verdict="unknown"],
-  .lv-badge[data-verdict="inertlink"],
-  .lv-badge[data-verdict="checking"] { --lv-accent: #93a0b4; }
+  .il-badge[data-verdict="danger"] { --il-accent-fill: #e0412c; }
+  .il-badge[data-verdict="unknown"],
+  .il-badge[data-verdict="inertlink"],
+  .il-badge[data-verdict="checking"] { --il-accent: #93a0b4; }
 
   @media (prefers-color-scheme: light) {
-    .lv-badge {
-      --lv-surface: #ffffff;
-      --lv-fg: #0d1117;
-      --lv-fg-muted: #5b6673;
-      --lv-edge: #e3e7ec;
-      --lv-on-fill: #ffffff;
-      --lv-on-fill-muted: rgba(255,255,255,.82);
-      --lv-danger-glow: rgba(192,39,26,.32);
+    .il-badge {
+      --il-surface: #ffffff;
+      --il-fg: #0d1117;
+      --il-fg-muted: #5b6673;
+      --il-edge: #e3e7ec;
+      --il-on-fill: #ffffff;
+      --il-on-fill-muted: rgba(255,255,255,.82);
+      --il-danger-glow: rgba(192,39,26,.32);
       box-shadow: 0 6px 20px -8px rgba(13,17,23,.25), 0 1px 2px rgba(13,17,23,.08);
     }
-    .lv-badge[data-verdict="safe"] { --lv-accent: #0f7a55; }
-    .lv-badge[data-verdict="caution"] {
-      --lv-accent: #8a5206;
-      --lv-tint: #fdf6e7;
-      --lv-edge-accent: #e8d3a3;
+    .il-badge[data-verdict="safe"] { --il-accent: #0f7a55; }
+    .il-badge[data-verdict="caution"] {
+      --il-accent: #8a5206;
+      --il-tint: #fdf6e7;
+      --il-edge-accent: #e8d3a3;
     }
-    .lv-badge[data-verdict="danger"] { --lv-accent-fill: #c0271a; }
-    .lv-badge[data-verdict="unknown"],
-    .lv-badge[data-verdict="inertlink"],
-    .lv-badge[data-verdict="checking"] { --lv-accent: #4a5565; }
+    .il-badge[data-verdict="danger"] { --il-accent-fill: #c0271a; }
+    .il-badge[data-verdict="unknown"],
+    .il-badge[data-verdict="inertlink"],
+    .il-badge[data-verdict="checking"] { --il-accent: #4a5565; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .lv-badge[data-verdict="checking"] .lv-icon { animation: none; }
+    .il-badge[data-verdict="checking"] .il-icon { animation: none; }
   }
 `;
 
@@ -215,7 +215,7 @@ function mount() {
   host.id = HOST_ID;
   // The host element is inert too, so even a mis-timed click lands on the page beneath.
   //
-  // `z-index` belongs HERE, on the host, not only on `.lv-badge` inside the shadow root. A
+  // `z-index` belongs HERE, on the host, not only on `.il-badge` inside the shadow root. A
   // `position: fixed` element always creates a stacking context, so the badge's
   // z-index:2147483647 is scoped *inside* the host and competes with nothing on the page. The
   // host's own level is what matters — and with `all: initial` that was `auto`, which any
@@ -240,18 +240,18 @@ function mount() {
   style.textContent = STYLE;
 
   const el = document.createElement('div');
-  el.className = 'lv-badge';
+  el.className = 'il-badge';
   el.setAttribute('data-verdict', 'unknown');
   // Announced, not focused: the badge must never pull focus off the link (golden rule 7).
   el.setAttribute('role', 'status');
   el.setAttribute('aria-live', 'polite');
   el.innerHTML = `
-    <span class="lv-eyebrow">
-      <span class="lv-icon" aria-hidden="true"></span>
-      <span class="lv-verdict"></span>
+    <span class="il-eyebrow">
+      <span class="il-icon" aria-hidden="true"></span>
+      <span class="il-verdict"></span>
     </span>
-    <span class="lv-host"><span class="lv-prefix"></span><span class="lv-owner"></span></span>
-    <span class="lv-reason"></span>
+    <span class="il-host"><span class="il-prefix"></span><span class="il-owner"></span></span>
+    <span class="il-reason"></span>
   `;
 
   root.append(style, el);
@@ -263,12 +263,12 @@ function mount() {
     root,
     el,
     nodes: {
-      icon: el.querySelector('.lv-icon'),
-      verdict: el.querySelector('.lv-verdict'),
-      host: el.querySelector('.lv-host'),
-      prefix: el.querySelector('.lv-prefix'),
-      owner: el.querySelector('.lv-owner'),
-      reason: el.querySelector('.lv-reason'),
+      icon: el.querySelector('.il-icon'),
+      verdict: el.querySelector('.il-verdict'),
+      host: el.querySelector('.il-host'),
+      prefix: el.querySelector('.il-prefix'),
+      owner: el.querySelector('.il-owner'),
+      reason: el.querySelector('.il-reason'),
     },
     anim: null,
   };
@@ -348,10 +348,10 @@ export function showBadge({
   const [prefix, owner] = splitHost(host, registrable);
   s.nodes.prefix.textContent = prefix;
   s.nodes.owner.textContent = owner;
-  s.nodes.host.classList.toggle('lv-hidden', !host);
+  s.nodes.host.classList.toggle('il-hidden', !host);
 
   s.nodes.reason.textContent = reason;
-  s.nodes.reason.classList.toggle('lv-hidden', !reason);
+  s.nodes.reason.classList.toggle('il-hidden', !reason);
 
   position(s.el, x, y);
   s.el.dataset.visible = 'true';

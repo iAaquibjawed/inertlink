@@ -1,6 +1,6 @@
 /**
  * Framer Motion presets for the popup and options pages.
- * Source of truth: design-system/linkverify/MASTER.md §5.
+ * Source of truth: design-system/inertlink/MASTER.md §5.
  *
  * Only these two surfaces use Framer Motion. The content-script badge animates with WAAPI so no
  * library ships into the user's pages (ADR-0002).

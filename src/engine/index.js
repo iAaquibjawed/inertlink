@@ -1,5 +1,5 @@
 /**
- * LinkVerify detection engine — PURE (CLAUDE.md golden rule 5).
+ * InertLink detection engine — PURE (CLAUDE.md golden rule 5).
  *
  * No DOM. No `chrome.*`. No `fetch`. This module is imported by both the content script and the
  * service worker, and is the only part of the codebase covered by unit tests. Keep it that way:

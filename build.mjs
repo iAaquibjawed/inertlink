@@ -1,5 +1,5 @@
 /**
- * LinkVerify build.
+ * InertLink build.
  *
  * Four outputs, three shapes (ADR-0001, ADR-0007):
  *
@@ -139,7 +139,7 @@ async function verifyContentIsLean() {
   }
   const kb = Math.round(text.length / 1024);
   if (kb > 80) throw new Error(`content.js is ${kb}kb — over the 80kb budget (ADR-0002).`);
-  console.log(`[linkverify] content script: ${kb}kb, dependency-free`);
+  console.log(`[inertlink] content script: ${kb}kb, dependency-free`);
 }
 
 /**
@@ -173,7 +173,7 @@ async function verifyManifestResolves() {
   if (missing.length) {
     throw new Error(`manifest references files missing from dist/: ${missing.join(', ')}`);
   }
-  console.log(`[linkverify] manifest: ${new Set(refs).size} referenced files all present`);
+  console.log(`[inertlink] manifest: ${new Set(refs).size} referenced files all present`);
 }
 
 await rm(DIST, { recursive: true, force: true });
@@ -185,7 +185,7 @@ if (watch) {
     const ctx = await esbuild.context({ ...common, ...options, entryPoints: [entry], outfile: out });
     await ctx.watch();
   }
-  console.log('[linkverify] watching — reload the extension after each rebuild');
+  console.log('[inertlink] watching — reload the extension after each rebuild');
 } else {
   await Promise.all(
     BUNDLES.map(({ entry, out, options }) =>
@@ -199,5 +199,5 @@ if (watch) {
     join(DIST, '.buildinfo'),
     'built from src/ — load dist/ as the unpacked extension\n'
   );
-  console.log('[linkverify] build complete → dist/');
+  console.log('[inertlink] build complete → dist/');
 }
