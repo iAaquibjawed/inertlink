@@ -1,0 +1,204 @@
+/**
+ * LinkVerify design tokens.
+ * Source of truth: design-system/linkverify/MASTER.md — edit that first, then mirror here.
+ *
+ * Imported by the popup and options pages. The content-script badge does NOT import this file;
+ * it inlines the subset it needs into its shadow root, because a stylesheet link from a content
+ * script is a fetch the host page can observe and a cascade the host page can fight with.
+ */
+
+:root {
+  /* ── Core palette ───────────────────────────────────────────── */
+  --lv-color-primary: #1e293b;
+  --lv-color-on-primary: #ffffff;
+  --lv-color-secondary: #334155;
+  --lv-color-accent: #22c55e;
+  --lv-color-destructive: #ef4444;
+  /* Focus ring is sky-400, not the generated slate: slate is invisible on the dark bg. */
+  --lv-color-ring: #38bdf8;
+
+  /* ── Surfaces (dark is the default; light overrides below) ──── */
+  --lv-color-bg: #0f172a;
+  --lv-color-surface: #172033;
+  --lv-color-muted: #272f42;
+  --lv-color-fg: #f8fafc;
+  --lv-color-fg-muted: #94a3b8;
+  --lv-color-border: #2b3850;
+  --lv-color-border-strong: #475569;
+
+  /* ── Verdict ramp — dark mode text values (all ≥4.5:1 on --lv-color-bg) ──
+     [adapted] Pulled off the framework-default ramp (#4ade80 / #fbbf24 / #f87171), which reads as
+     generic status-chip green-amber-red on any product. These are tuned as a set: the greens and
+     reds sit on the warm side of their hues so they separate from the cool slate surface, and
+     danger is a signal vermilion rather than a pink-leaning red — it has to mean "stop", not
+     "invalid field". Contrast on --lv-color-bg: jade 9.3:1, amber 10.4:1, vermilion 5.6:1,
+     slate 7.1:1. */
+  --lv-verdict-safe: #5bd6a4;
+  --lv-verdict-caution: #f2b441;
+  --lv-verdict-danger: #ff6a55;
+  --lv-verdict-unknown: #93a0b4;
+  --lv-verdict-checking: #93a0b4;
+
+  /* Fills: saturated, used for solid surfaces, bars, dots. Never body text on dark. */
+  --lv-fill-safe: #1faa78;
+  --lv-fill-caution: #d9931a;
+  --lv-fill-danger: #e0412c;
+  --lv-fill-unknown: #64748b;
+
+  /* Ink for text sitting ON a saturated fill — only `danger` uses this. */
+  --lv-on-fill: #180604;
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  /* No CDN font: MV3 CSP + golden rule 1. Inter ships locally or we fall through. */
+  --lv-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --lv-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --lv-text-verdict: 15px;
+  --lv-text-host: 12px;
+  --lv-text-reason: 12px;
+  --lv-text-title: 16px;
+  --lv-text-body: 14px;
+  --lv-text-label: 11px;
+
+  /* ── Spacing ────────────────────────────────────────────────── */
+  --lv-space-xs: 4px;
+  --lv-space-sm: 8px;
+  --lv-space-md: 12px;
+  --lv-space-lg: 16px;
+  --lv-space-xl: 24px;
+  --lv-space-2xl: 32px;
+
+  /* ── Radius ─────────────────────────────────────────────────── */
+  --lv-radius-sm: 6px;
+  --lv-radius-md: 8px;
+  --lv-radius-lg: 12px;
+  --lv-radius-pill: 999px;
+
+  /* ── Elevation — alphas tuned for arbitrary (often dark) backdrops ── */
+  --lv-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --lv-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --lv-shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.42);
+
+  /* ── Motion — exits faster than enters ──────────────────────── */
+  --lv-dur-fast: 120ms;
+  --lv-dur-base: 180ms;
+  --lv-dur-slow: 260ms;
+  --lv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --lv-ease-in: cubic-bezier(0.4, 0, 1, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --lv-color-bg: #ffffff;
+    --lv-color-surface: #f8fafc;
+    --lv-color-muted: #f1f5f9;
+    --lv-color-fg: #0f172a;
+    --lv-color-fg-muted: #475569;
+    --lv-color-border: #e2e8f0;
+    --lv-color-border-strong: #cbd5e1;
+
+    /* Light-mode ink. Same hues, darkened until each clears AA on white:
+       jade 5.6:1, amber 6.1:1, vermilion 6.3:1, slate 7.6:1. */
+    --lv-verdict-safe: #0f7a55;
+    --lv-verdict-caution: #8a5206;
+    --lv-verdict-danger: #c0271a;
+    --lv-verdict-unknown: #4a5565;
+    --lv-verdict-checking: #4a5565;
+
+    --lv-fill-safe: #0f7a55;
+    --lv-fill-caution: #a8660c;
+    --lv-fill-danger: #c0271a;
+    --lv-on-fill: #ffffff;
+
+    --lv-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --lv-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.1);
+    --lv-shadow-lg: 0 10px 28px rgba(15, 23, 42, 0.14);
+  }
+}
+
+/* Reduced motion never reduces information — only movement. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --lv-dur-fast: 1ms;
+    --lv-dur-base: 1ms;
+    --lv-dur-slow: 1ms;
+  }
+}
+
+/* ── Minimal reset shared by popup + options ──────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--lv-font-sans);
+  font-size: var(--lv-text-body);
+  line-height: 1.5;
+  color: var(--lv-color-fg);
+  background: var(--lv-color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--lv-color-ring);
+  outline-offset: 2px;
+  border-radius: var(--lv-radius-sm);
+}
+
+/* ── Switch — shared by popup and options ─────────────────────
+   A real <input type="checkbox"> stays in the accessibility tree and keeps native keyboard
+   behaviour; it is visually replaced, never removed. The thumb is animated by Framer Motion
+   (transform only), so this file only owns the resting appearance. */
+.lv-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--lv-space-sm);
+  cursor: pointer;
+  user-select: none;
+}
+.lv-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.lv-track {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  border-radius: var(--lv-radius-pill);
+  background: var(--lv-color-muted);
+  border: 1px solid var(--lv-color-border-strong);
+  transition: background var(--lv-dur-base) var(--lv-ease-out),
+    border-color var(--lv-dur-base) var(--lv-ease-out);
+  flex: none;
+}
+.lv-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--lv-color-fg);
+}
+.lv-switch input:checked + .lv-track {
+  background: var(--lv-color-accent);
+  border-color: var(--lv-color-accent);
+}
+.lv-switch input:checked + .lv-track .lv-thumb {
+  background: #ffffff;
+}
+/* The visible focus ring must land on the track, since the real input is offscreen. */
+.lv-switch input:focus-visible + .lv-track {
+  outline: 2px solid var(--lv-color-ring);
+  outline-offset: 2px;
+}
+.lv-switch input:disabled + .lv-track {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

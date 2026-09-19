@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LinkVerify — manual smoke page</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 760px; margin: 0 auto; padding: 48px 24px 96px;
+      }
+      h1 { font-size: 28px; letter-spacing: -.02em; margin-bottom: 4px; }
+      .sub { color: #64748b; margin-top: 0; }
+      .warn {
+        border: 1px solid #f59e0b; border-left-width: 3px; border-radius: 8px;
+        padding: 12px 16px; background: rgba(245,158,11,.08); margin: 24px 0 32px;
+      }
+      h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em;
+           color: #64748b; margin-top: 40px; }
+      ul { list-style: none; padding: 0; }
+      li { padding: 10px 0; border-bottom: 1px solid rgba(100,116,139,.2); }
+      li small { display: block; color: #64748b; font-size: 13px; }
+      a { color: inherit; }
+      .dark-strip { background: #0f172a; color: #f8fafc; padding: 24px;
+                    border-radius: 12px; margin-top: 40px; }
+      .dark-strip a { color: #93c5fd; }
+
+      /* Deliberately ordinary: sticky bar, modest z-index, opaque background. This is the exact
+         shape that hid the badge before ADR-0013. */
+      .repro-nav {
+        position: sticky; top: 0; z-index: 100;
+        display: flex; gap: 20px; align-items: center;
+        margin: -48px -24px 24px; padding: 14px 24px;
+        background: #111827; color: #e5e7eb;
+        border-bottom: 1px solid rgba(148,163,184,.3);
+        font-size: 14px;
+      }
+      .repro-nav a { color: #93c5fd; }
+      .repro-nav span { margin-left: auto; color: #94a3b8; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <!-- Regression fixture for the stacking-context bug (ADR-0013). A sticky nav at z-index 100
+         is an extremely ordinary thing for a site to have, and it used to swallow the badge
+         completely: the badge's own z-index lives inside the host's stacking context, so the
+         host's level is what competes with the page. Hover these links — the badge must paint
+         over the bar, not behind it. -->
+    <nav class="repro-nav">
+      <a href="https://example.com/about">About</a>
+      <a href="https://exarnple.com/work">Work</a>
+      <a href="http://example.com/login">Contact</a>
+      <span>&larr; badge must appear <em>over</em> this bar (z-index: 100)</span>
+    </nav>
+
+    <h1>LinkVerify smoke page</h1>
+    <p class="sub">Hover each link and check the badge against the expectation beneath it.</p>
+
+    <div class="warn">
+      <strong>Nothing here is live malware.</strong> Every "dangerous" link uses RFC&nbsp;2606
+      reserved names (<code>example.com</code>, <code>.invalid</code>, <code>.test</code>) or
+      RFC&nbsp;5737 documentation IPs. None resolve. Do not ever add a real malicious URL to this
+      file — hovering must be safe, and it is only safe because these go nowhere.
+    </div>
+
+    <p><em>Badges only appear once you grant access to this page. Open the LinkVerify popup and
+    press <strong>Turn on for this site</strong> — the extension declares no static content script
+    (ADR-0003), so nothing runs anywhere until you allow it. Check the console for
+    <code>[linkverify] active on …</code> to confirm it is running.</em></p>
+
+    <div class="warn">
+      <strong>Serve this page over http, not <code>file://</code>.</strong> Run
+      <code>npm run smoke</code> and open <code>http://localhost:8787/phishing-sandbox.html</code>.
+      A file URL has an opaque origin that cannot be written as a match pattern, so the popup has
+      nothing it can request access to.
+    </div>
+
+    <h2>Should read Safe</h2>
+    <ul>
+      <li>
+        <a href="https://example.com/">example.com</a>
+        <small>Plain HTTPS, no signals.</small>
+      </li>
+      <li>
+        <a href="https://docs.example.com/guide/getting-started">Documentation</a>
+        <small>Subdomain depth is normal.</small>
+      </li>
+    </ul>
+
+    <h2>Should read Caution</h2>
+    <ul>
+      <li>
+        <a href="http://example.com/login">http://example.com/login</a>
+        <small>non-https on a login path.</small>
+      </li>
+      <li>
+        <a href="https://example.com:8081/signin">example.com:8081/signin</a>
+        <small>nonstandard-port.</small>
+      </li>
+      <li>
+        <a href="https://a.b.c.d.e.example.com/">a.b.c.d.e.example.com</a>
+        <small>excessive-subdomains.</small>
+      </li>
+      <li>
+        <a href="https://example.test/x/aZ9">Shortened link</a>
+        <small>url-shortener — destination unknown, not necessarily bad.</small>
+      </li>
+      <li>
+        <a href="https://invoice-2026.zip/download">invoice-2026.zip</a>
+        <small>suspicious-tld — the TLD collides with a filename extension.</small>
+      </li>
+      <li>
+        <a href="https://example.com/redirect?url=https://internal.invalid/steal">Continue</a>
+        <small>encoded-obfuscation — a second address hidden in the query.</small>
+      </li>
+    </ul>
+
+    <h2>Should read Danger</h2>
+    <ul>
+      <li>
+        <a href="https://example.com@internal.invalid/verify">https://example.com/verify</a>
+        <small>userinfo-trick — real host is internal.invalid.</small>
+      </li>
+      <li>
+        <a href="http://192.0.2.5/account/login">Sign in to your account</a>
+        <small>ip-host on a login page.</small>
+      </li>
+      <li>
+        <a href="https://example.com.secure-billing.invalid/pay">example.com billing</a>
+        <small>deceptive-subdomain — brand is a subdomain of another host.</small>
+      </li>
+      <li>
+        <a href="https://exarnple.com/">exarnple.com</a>
+        <small>typosquat — "rn" reads as "m".</small>
+      </li>
+      <li>
+        <a href="https://internal.invalid/reset">https://example.com/reset</a>
+        <small>text-href-mismatch — visible text lies about the destination.</small>
+      </li>
+      <li>
+        <a href="https://paypa1.com/login">Sign in to PayPal</a>
+        <small>typosquat — digit-for-letter homoglyph against a real brand.</small>
+      </li>
+      <li>
+        <a href="https://phish-demo.invalid/anything">Open document</a>
+        <small>local-blocklist — bundled list hit, decisive on its own.</small>
+      </li>
+      <li>
+        <a href="javascript:fetch('https://internal.invalid/steal')">Click to continue</a>
+        <small>
+          javascript: with a real body — Caution, not Danger. It runs in this page's origin, which
+          the site already controls.
+        </small>
+      </li>
+    </ul>
+
+    <h2>Should read Safe</h2>
+    <ul>
+      <li>
+        <a href="https://google.com/search?q=test">google.com</a>
+        <small>allowlist — bundled known-safe domain, and never sent to any provider.</small>
+      </li>
+      <li>
+        <a href="https://user.github.io/project/">user.github.io</a>
+        <small>github.io is a public suffix, so this is zero subdomains deep, not two.</small>
+      </li>
+    </ul>
+
+    <h2>Submit controls and InertLinks</h2>
+    <ul>
+      <li>
+        <form action="https://phish-demo.invalid/cart/delete" method="post" style="display:inline">
+          <input type="submit" value="Delete" />
+        </form>
+        <small>
+          A form submit button. Amazon's cart "Delete" and "Save for later" are exactly this —
+          <code>&lt;input type="submit"&gt;</code>, no <code>href</code>. Clicking still leaves the
+          page, so the destination must be checked. Should read <strong>Danger</strong>.
+        </small>
+      </li>
+      <li>
+        <form action="https://example.com/cart/save" method="post" style="display:inline">
+          <button>Save for later</button>
+        </form>
+        <small>A &lt;button&gt; with no type — defaults to submit. Should read Safe.</small>
+      </li>
+      <li>
+        <form action="https://example.com/x" method="post" style="display:inline">
+          <button type="button">Open dialog</button>
+        </form>
+        <small>type="button" navigates nowhere. Must stay silent.</small>
+      </li>
+      <li>
+        <a href="#" role="button">Share</a>
+        <small>
+          Amazon's cart "Share" is an <code>&lt;a href="#"&gt;</code>. It reads as an
+          <strong>InertLink</strong> — the anchor presents itself as a link (pointer cursor, a
+          URL in the status bar), so silence there is indistinguishable from the extension being
+          broken.
+        </small>
+      </li>
+      <li>
+        <a href="javascript:void(0)">See more categories</a>
+        <small>
+          Inert placeholder. Amazon's cart has fourteen of these. Also an
+          <strong>InertLink</strong> — never Danger.
+        </small>
+      </li>
+    </ul>
+
+    <h2>Edge cases the badge must survive</h2>
+    <ul>
+      <li>
+        <a href="https://this-is-an-extremely-long-subdomain-chain.for-truncation-testing.example.com/a/b/c">Very long host</a>
+        <small>Host must truncate in the middle, keeping the TLD visible.</small>
+      </li>
+      <li style="text-align: right">
+        <a href="https://example.com/">Link at the right edge</a>
+        <small>Badge must flip left instead of overflowing the viewport.</small>
+      </li>
+      <li>
+        <a href="https://example.com/"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Crect width='120' height='40' fill='%2364748b'/%3E%3C/svg%3E" alt="Image link" /></a>
+        <small>Anchor wrapping an image — hover target is not text.</small>
+      </li>
+    </ul>
+
+    <div class="dark-strip">
+      <h2 style="color:#94a3b8;margin-top:0">On a dark background</h2>
+      <p>The badge follows the user's theme, not the page's:
+        <a href="https://example.com/">safe link</a> ·
+        <a href="http://192.0.2.7/login">dangerous link</a>
+      </p>
+    </div>
+
+    <p style="margin-top:64px;color:#64748b;font-size:13px">
+      Also verify: the badge never covers the link, never blocks a click (try clicking through it),
+      disappears on mouse-out, and that DevTools → Network shows zero requests while hovering.
+    </p>
+  </body>
+</html>

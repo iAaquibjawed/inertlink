@@ -1,0 +1,28 @@
+{
+  "$comment": [
+    "Bundled blocklist for the `local-blocklist` check. Hosts, lowercased, no scheme, no path.",
+    "",
+    "SHIPPED CONTENT IS DELIBERATELY SYNTHETIC. Every entry below uses an RFC 2606 reserved name",
+    "(.invalid / .test / .example) so this file can never point at a live host — the same rule the",
+    "test fixtures follow. A real threat feed is a moving target and does not belong in git; it is",
+    "fetched into chrome.storage.local by the worker's refresh alarm, and only when the user has",
+    "opted into online checks (golden rule 2).",
+    "",
+    "Matching is exact-host OR any parent domain, so 'login.phish-demo.invalid' is caught by",
+    "'phish-demo.invalid'. A blocklist hit outranks everything, including the allowlist — that",
+    "asymmetry is on purpose: being wrong toward caution is survivable, the reverse is not.",
+    "",
+    "`version` and `updatedAt` let the worker decide whether a fetched list supersedes this one."
+  ],
+  "version": 1,
+  "updatedAt": "2026-09-19",
+  "hosts": [
+    "phish-demo.invalid",
+    "known-bad.invalid",
+    "billing-secure.invalid",
+    "account-verify.invalid",
+    "wallet-recovery.invalid",
+    "signin-alert.test",
+    "credential-harvest.example"
+  ]
+}

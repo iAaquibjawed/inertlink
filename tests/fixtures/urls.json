@@ -1,0 +1,321 @@
+{
+  "$comment": [
+    "GOLDEN FIXTURES — this file is the spec (PLAN.md §4).",
+    "Each case: the URL, the verdict the engine must return, and the check ids that must fire.",
+    "",
+    "Shape:",
+    "  { \"url\": \"http://apple.com@evil.ru/\",",
+    "    \"expect\": \"danger\",",
+    "    \"signals\": [\"userinfo-trick\"],",
+    "    \"context\": { \"anchorText\": \"paypal.com\" },   // optional",
+    "    \"note\": \"the @ hides the real host\" }",
+    "",
+    "Rules: never reference a live malicious URL. Craft examples, or use RFC 2606 / RFC 5737",
+    "reserved names (example.com, .invalid, .test, 192.0.2.0/24) so nothing here can ever resolve",
+    "to real malware.",
+    "",
+    "`signals` is a subset assertion, not an exact set — a case may legitimately trip more checks",
+    "than it names. Where the exact set matters, the test file asserts it separately."
+  ],
+  "cases": [
+    {
+      "url": "https://example.com/",
+      "expect": "safe",
+      "signals": [],
+      "note": "Plain HTTPS, nothing fires. The baseline the whole product rests on."
+    },
+    {
+      "url": "https://docs.example.com/guide/getting-started",
+      "expect": "safe",
+      "signals": [],
+      "note": "One subdomain is ordinary depth."
+    },
+    {
+      "url": "https://static.eu.example.com/app.css",
+      "expect": "safe",
+      "signals": [],
+      "note": "Two subdomains still ordinary — excessive-subdomains must not fire."
+    },
+    {
+      "url": "https://example.co.uk/pricing",
+      "expect": "safe",
+      "signals": [],
+      "note": "Multi-part suffix: registrable must be example.co.uk, not co.uk."
+    },
+    {
+      "url": "https://user.github.io/project/",
+      "expect": "safe",
+      "signals": [],
+      "note": "Known hosting suffix — github.io is the public suffix, so depth is zero."
+    },
+    {
+      "url": "https://google.com/search?q=test",
+      "expect": "safe",
+      "signals": [
+        "allowlist"
+      ],
+      "note": "Bundled known-safe domain short-circuits."
+    },
+    {
+      "url": "https://accounts.google.com/signin",
+      "expect": "safe",
+      "signals": [
+        "allowlist"
+      ],
+      "note": "A brand on its own subdomain is the real thing — deceptive-subdomain must stay silent."
+    },
+    {
+      "url": "https://mybank.example/",
+      "expect": "safe",
+      "signals": [
+        "allowlist"
+      ],
+      "context": {
+        "userAllowlist": [
+          "mybank.example"
+        ]
+      },
+      "note": "User allowlist entry behaves like the bundled list."
+    },
+    {
+      "url": "http://localhost:3000/login",
+      "expect": "caution",
+      "signals": [
+        "non-https"
+      ],
+      "note": "Developer traffic. http still flags, but ip-host and nonstandard-port must not."
+    },
+    {
+      "url": "http://192.168.1.1/admin",
+      "expect": "safe",
+      "signals": [],
+      "note": "Router admin page on the private range — ip-host is exempt and http on a non-credential path is below threshold."
+    },
+    {
+      "url": "http://example.com/login",
+      "expect": "caution",
+      "signals": [
+        "non-https"
+      ],
+      "note": "Unencrypted sign-in. Escalated because the path asks for credentials."
+    },
+    {
+      "url": "https://example.com:8081/signin",
+      "expect": "caution",
+      "signals": [
+        "nonstandard-port"
+      ],
+      "note": "Sign-in page on an odd port."
+    },
+    {
+      "url": "https://a.b.c.d.e.example.com/",
+      "expect": "caution",
+      "signals": [
+        "excessive-subdomains"
+      ],
+      "note": "Five levels of padding before the real domain."
+    },
+    {
+      "url": "https://example.test/x/aZ9",
+      "expect": "caution",
+      "signals": [
+        "url-shortener"
+      ],
+      "note": "Shortener. Destination unknown, not necessarily bad — must never read danger alone."
+    },
+    {
+      "url": "https://cheap-deals.xyz/offer",
+      "expect": "safe",
+      "signals": [
+        "suspicious-tld"
+      ],
+      "note": "A risky TLD on its own is a contributing signal, not a verdict."
+    },
+    {
+      "url": "https://invoice-2026.zip/download",
+      "expect": "caution",
+      "signals": [
+        "suspicious-tld"
+      ],
+      "note": "Top-tier: the TLD collides with a filename extension."
+    },
+    {
+      "url": "https://example.com/redirect?url=https://internal.invalid/steal",
+      "expect": "caution",
+      "signals": [
+        "encoded-obfuscation"
+      ],
+      "note": "Open-redirect shape — a second address hidden in the query."
+    },
+    {
+      "url": "https://example.com@internal.invalid/verify",
+      "expect": "danger",
+      "signals": [
+        "userinfo-trick"
+      ],
+      "note": "The @ hides the real host. Everything before it is discarded by the browser."
+    },
+    {
+      "url": "http://192.0.2.5/account/login",
+      "expect": "danger",
+      "signals": [
+        "ip-host",
+        "non-https"
+      ],
+      "note": "Credential page on a bare documentation-range IP, unencrypted."
+    },
+    {
+      "url": "https://example.com.secure-billing.invalid/pay",
+      "expect": "danger",
+      "signals": [
+        "deceptive-subdomain"
+      ],
+      "note": "Brand sits in the subdomain; the real owner is secure-billing.invalid."
+    },
+    {
+      "url": "https://exarnple.com/",
+      "expect": "danger",
+      "signals": [
+        "typosquat"
+      ],
+      "note": "rn reads as m at UI sizes. Folded to distance zero, so it is intent, not a typo."
+    },
+    {
+      "url": "https://paypa1.com/login",
+      "expect": "danger",
+      "signals": [
+        "typosquat"
+      ],
+      "note": "Digit-for-letter homoglyph against a real brand."
+    },
+    {
+      "url": "https://g00gle.com/",
+      "expect": "danger",
+      "signals": [
+        "typosquat"
+      ],
+      "note": "Two digit substitutions fold to an exact brand match."
+    },
+    {
+      "url": "https://internal.invalid/reset",
+      "expect": "danger",
+      "signals": [
+        "text-href-mismatch"
+      ],
+      "context": {
+        "anchorText": "https://example.com/reset"
+      },
+      "note": "Visible text names a different site than the href."
+    },
+    {
+      "url": "https://phish-demo.invalid/anything",
+      "expect": "danger",
+      "signals": [
+        "local-blocklist"
+      ],
+      "note": "Bundled blocklist hit. Decisive on its own."
+    },
+    {
+      "url": "https://login.phish-demo.invalid/",
+      "expect": "danger",
+      "signals": [
+        "local-blocklist"
+      ],
+      "note": "Blocklist matching covers subdomains, so one entry covers every host they spin up."
+    },
+    {
+      "url": "https://trusted.example/",
+      "expect": "danger",
+      "signals": [
+        "local-blocklist"
+      ],
+      "context": {
+        "userAllowlist": [
+          "trusted.example"
+        ],
+        "userBlocklist": [
+          "trusted.example"
+        ]
+      },
+      "note": "On both lists: the blocklist wins. Over-warning costs a click, under-warning costs an account."
+    },
+    {
+      "url": "javascript:void(0)",
+      "expect": "unknown",
+      "signals": [],
+      "note": "An InertLink: the standard placeholder for a JS-driven control. Amazon's cart has fourteen of these (Search, Cart, Orders, 'See more categories'). Flagging them was the worst false positive in the project — no destination, so no verdict."
+    },
+    {
+      "url": "data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==",
+      "expect": "danger",
+      "signals": [
+        "non-https"
+      ],
+      "note": "Attacker-authored document rendered inline."
+    },
+    {
+      "url": "http://example.com.account-verify.invalid:8080/secure/login",
+      "expect": "danger",
+      "signals": [
+        "deceptive-subdomain",
+        "local-blocklist",
+        "non-https",
+        "nonstandard-port"
+      ],
+      "note": "Everything at once. Signals stack rather than short-circuit."
+    },
+    {
+      "url": "",
+      "expect": "unknown",
+      "signals": [],
+      "note": "Unparseable. Never safe (ADR-0006)."
+    },
+    {
+      "url": "not a url",
+      "expect": "unknown",
+      "signals": [],
+      "note": "Unparseable."
+    },
+    {
+      "url": "mailto:someone@example.com",
+      "expect": "unknown",
+      "signals": [],
+      "note": "Out of scope. We do not guess at schemes we do not model."
+    },
+    {
+      "url": "#section-two",
+      "expect": "unknown",
+      "signals": [],
+      "note": "In-page anchor with no page context — nothing to evaluate."
+    },
+    {
+      "url": "/account/settings",
+      "expect": "safe",
+      "signals": [],
+      "context": {
+        "pageUrl": "https://example.com/home"
+      },
+      "note": "Relative href resolved against the page. Resolution is string-only — never a fetch (golden rule 3)."
+    },
+    {
+      "url": "javascript:fetch('https://internal.invalid/steal')",
+      "expect": "caution",
+      "signals": [
+        "non-https"
+      ],
+      "note": "javascript: with a real body. Runs in the page's own origin, which the site already controls — worth checking, not an emergency."
+    },
+    {
+      "url": "blob:https://example.com/9f2c-4a11",
+      "expect": "unknown",
+      "signals": [],
+      "note": "How ordinary sites hand you a generated file. Flagging every download button was a false positive with no threat behind it."
+    },
+    {
+      "url": "javascript:;",
+      "expect": "unknown",
+      "signals": [],
+      "note": "The other common InertLink form."
+    }
+  ]
+}

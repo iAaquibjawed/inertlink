@@ -1,0 +1,266 @@
+/* Options — design-system/linkverify/MASTER.md §4.3.
+   Sectioned form, labels always visible, progressive disclosure for the API key. */
+
+.lv-options {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: var(--lv-space-2xl) var(--lv-space-lg) 96px;
+}
+
+.lv-page-head {
+  margin-bottom: var(--lv-space-xl);
+}
+.lv-page-title {
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--lv-space-xs);
+}
+.lv-page-sub {
+  margin: 0;
+  color: var(--lv-color-fg-muted);
+}
+
+.lv-card {
+  border: 1px solid var(--lv-color-border);
+  border-radius: var(--lv-radius-lg);
+  background: var(--lv-color-surface);
+  padding: var(--lv-space-lg);
+  margin-bottom: var(--lv-space-lg);
+}
+.lv-card-title {
+  font-size: var(--lv-text-title);
+  font-weight: 600;
+  margin: 0 0 var(--lv-space-xs);
+}
+.lv-card-help {
+  margin: 0 0 var(--lv-space-lg);
+  color: var(--lv-color-fg-muted);
+  font-size: var(--lv-text-body);
+}
+
+/* ── Sensitivity segmented control ──────────────────────────── */
+.lv-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--lv-space-xs);
+  padding: var(--lv-space-xs);
+  border: 1px solid var(--lv-color-border);
+  border-radius: var(--lv-radius-md);
+  background: var(--lv-color-bg);
+}
+.lv-seg {
+  position: relative;
+  border: 0;
+  background: none;
+  padding: var(--lv-space-sm) var(--lv-space-md);
+  border-radius: var(--lv-radius-sm);
+  color: var(--lv-color-fg-muted);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--lv-dur-base) var(--lv-ease-out);
+}
+.lv-seg[aria-pressed='true'] {
+  color: var(--lv-color-fg);
+}
+.lv-seg-label {
+  position: relative;
+  z-index: 1;
+}
+/* Framer Motion layoutId pill slides between segments — motion shows continuity. */
+.lv-seg-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--lv-radius-sm);
+  background: var(--lv-color-muted);
+  box-shadow: inset 0 0 0 1px var(--lv-color-border-strong);
+}
+.lv-seg-note {
+  margin: var(--lv-space-sm) 0 0;
+  font-size: var(--lv-text-label);
+  color: var(--lv-color-fg-muted);
+}
+
+/* ── Fields ─────────────────────────────────────────────────── */
+.lv-field {
+  display: block;
+  margin-bottom: var(--lv-space-md);
+}
+.lv-field:last-child {
+  margin-bottom: 0;
+}
+.lv-field-label {
+  display: block;
+  font-size: var(--lv-text-label);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lv-color-fg-muted);
+  margin-bottom: var(--lv-space-xs);
+}
+.lv-input {
+  width: 100%;
+  padding: 10px var(--lv-space-md);
+  border: 1px solid var(--lv-color-border-strong);
+  border-radius: var(--lv-radius-md);
+  background: var(--lv-color-bg);
+  color: var(--lv-color-fg);
+  font: inherit;
+  transition: border-color var(--lv-dur-base) var(--lv-ease-out);
+}
+.lv-input::placeholder {
+  color: var(--lv-color-fg-muted);
+}
+.lv-input:focus-visible {
+  border-color: var(--lv-color-ring);
+}
+.lv-field-help {
+  margin: var(--lv-space-xs) 0 0;
+  font-size: var(--lv-text-label);
+  color: var(--lv-color-fg-muted);
+}
+
+/* ── Host lists ─────────────────────────────────────────────── */
+.lv-list-add {
+  display: flex;
+  gap: var(--lv-space-sm);
+  margin-bottom: var(--lv-space-md);
+}
+.lv-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lv-space-xs);
+}
+.lv-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--lv-space-sm);
+  padding: var(--lv-space-sm) var(--lv-space-md);
+  border: 1px solid var(--lv-color-border);
+  border-radius: var(--lv-radius-md);
+  background: var(--lv-color-bg);
+  font-family: var(--lv-font-mono);
+  font-size: var(--lv-text-host);
+}
+.lv-list-item span {
+  flex: 1;
+}
+.lv-empty {
+  padding: var(--lv-space-md);
+  border: 1px dashed var(--lv-color-border-strong);
+  border-radius: var(--lv-radius-md);
+  color: var(--lv-color-fg-muted);
+  font-size: var(--lv-text-body);
+  text-align: center;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.lv-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lv-space-xs);
+  padding: 10px var(--lv-space-lg);
+  border-radius: var(--lv-radius-md);
+  border: 1px solid transparent;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--lv-dur-base) var(--lv-ease-out),
+    border-color var(--lv-dur-base) var(--lv-ease-out), color var(--lv-dur-base) var(--lv-ease-out);
+}
+.lv-btn-primary {
+  background: var(--lv-color-accent);
+  color: #062312;
+}
+.lv-btn-primary:hover {
+  background: color-mix(in srgb, var(--lv-color-accent) 88%, #000);
+}
+.lv-btn-ghost {
+  background: transparent;
+  border-color: var(--lv-color-border-strong);
+  color: var(--lv-color-fg);
+}
+.lv-btn-ghost:hover {
+  background: var(--lv-color-muted);
+}
+.lv-btn-danger {
+  background: transparent;
+  border-color: var(--lv-color-border-strong);
+  color: var(--lv-verdict-danger);
+}
+.lv-btn-danger:hover {
+  border-color: var(--lv-verdict-danger);
+}
+.lv-iconbtn-sm {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--lv-radius-sm);
+  background: transparent;
+  color: var(--lv-color-fg-muted);
+  cursor: pointer;
+  transition: color var(--lv-dur-base) var(--lv-ease-out),
+    background var(--lv-dur-base) var(--lv-ease-out);
+}
+.lv-iconbtn-sm:hover {
+  background: var(--lv-color-muted);
+  color: var(--lv-verdict-danger);
+}
+
+/* ── Privacy callout ────────────────────────────────────────── */
+.lv-callout {
+  display: flex;
+  gap: var(--lv-space-md);
+  padding: var(--lv-space-md);
+  border-radius: var(--lv-radius-md);
+  border: 1px solid var(--lv-color-border);
+  background: var(--lv-color-bg);
+  font-size: var(--lv-text-body);
+  color: var(--lv-color-fg-muted);
+  margin-top: var(--lv-space-md);
+}
+.lv-callout svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--lv-color-fg-muted);
+}
+
+.lv-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: var(--lv-space-md);
+}
+.lv-toggle-row .lv-toggle-copy {
+  flex: 1;
+}
+.lv-toggle-copy strong {
+  display: block;
+  font-weight: 500;
+  color: var(--lv-color-fg);
+}
+.lv-toggle-copy span {
+  font-size: var(--lv-text-label);
+  color: var(--lv-color-fg-muted);
+}
+
+/* disclosure wrapper — overflow hidden so the height animation doesn't leak content */
+.lv-disclosure {
+  overflow: hidden;
+}
+
+.lv-phase-banner {
+  padding: var(--lv-space-md) var(--lv-space-lg);
+  border: 1px solid var(--lv-color-border-strong);
+  border-left: 3px solid var(--lv-fill-caution);
+  border-radius: var(--lv-radius-md);
+  background: var(--lv-color-surface);
+  color: var(--lv-color-fg-muted);
+  margin-bottom: var(--lv-space-xl);
+  font-size: var(--lv-text-body);
+}
