@@ -102,3 +102,45 @@ requires `sender.id === chrome.runtime.id`.
   the documented upgrade path.
 - **An allowlisted host is un-flaggable.** That is the point of an allowlist, and the bundled list
   is deliberately short. A user-added entry is the user's decision.
+
+---
+
+## Landing page (`site/`)
+
+Reviewed 2026-09-20. The page is static: no forms, no backend, no analytics, no third-party
+requests. Response headers are set in `render.yaml`, including `default-src 'none'`.
+
+### Finding: internal design notes were shipping in the bundles — **fixed**
+
+`src/engine/data/*.json` carries `$comment` blocks explaining why a domain is deliberately absent
+from the allowlist, how the blocklist is refreshed, and what each TLD tier means. Five of those
+blocks were being bundled verbatim into two places they did not belong:
+
+- `dist/content/content.js`, which is injected into **every page the user grants** and has a size
+  budget; and
+- `site/dist/main.js`, the public landing-page bundle.
+
+No secret was exposed, but internal implementation commentary in shipped output is surface area
+with no upside, and it was dead weight in the one file whose cost is paid on every site visit.
+
+A published HTML comment was also describing how the contact address is hidden from scrapers,
+immediately above the address it hides.
+
+Fix: `build-plugins.mjs` strips `$comment` from the data JSON at bundle time for **both** builds,
+and strips HTML comments from the published markup. The notes remain in source, where they are
+useful. Content script: 58kb → 51kb.
+
+### Verified clean
+
+| Check | Result |
+|---|---|
+| Source maps in output | none |
+| Local filesystem paths / username in bundle | none |
+| Secret-shaped strings | none |
+| Contact address in raw HTML | none — assembled at runtime |
+| Internal design notes in output | none |
+| `target="_blank"` without `rel="noopener"` | 0 of 5 |
+| Third-party hosts fetched at runtime | none; fonts and GSAP are bundled |
+
+`gsap.com` and `jack@greensock.com` appear as strings inside GSAP's own warning messages and
+licence banner. They are never fetched, and `default-src 'none'` would block it if they were.

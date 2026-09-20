@@ -21,6 +21,7 @@ import * as esbuild from 'esbuild';
 import { cp, mkdir, rm, readFile, writeFile, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { stripJsonComments } from './build-plugins.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const SRC = join(ROOT, 'src');
@@ -35,6 +36,7 @@ const common = {
   loader: { '.jsx': 'jsx', '.json': 'json' },
   logLevel: 'info',
   sourcemap: watch ? 'inline' : false,
+  plugins: [stripJsonComments],
 };
 
 /** @type {Array<{ entry: string, out: string, options: object }>} */

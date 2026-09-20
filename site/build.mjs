@@ -17,6 +17,7 @@ import { cp, mkdir, rm, readFile, writeFile, readdir } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname, normalize } from 'node:path';
+import { stripJsonComments, stripHtmlComments } from '../build-plugins.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = join(HERE, 'dist');
@@ -44,6 +45,7 @@ const options = {
   minify: !watch,
   sourcemap: watch,
   logLevel: 'info',
+  plugins: [stripJsonComments],
 };
 
 /** Files the HTML references directly, so they must land in dist/ alongside it. */
@@ -58,7 +60,13 @@ const STATIC_FILES = [
 ];
 
 async function copyStatic() {
-  for (const f of STATIC_FILES) await cp(join(HERE, f), join(OUT, f));
+  for (const f of STATIC_FILES) {
+    if (f === 'index.html') {
+      await writeFile(join(OUT, f), stripHtmlComments(await readFile(join(HERE, f), 'utf8')));
+      continue;
+    }
+    await cp(join(HERE, f), join(OUT, f));
+  }
   await cp(join(HERE, 'styles'), join(OUT, 'styles'), { recursive: true });
 }
 
