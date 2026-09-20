@@ -59,10 +59,53 @@ export async function readSettings() {
   return { ...DEFAULT_SETTINGS, ...stored };
 }
 
+/**
+ * Accept only known settings keys, with the right type.
+ *
+ * `chrome.storage.sync.set` will happily write anything it is given, including keys nothing reads
+ * and values of the wrong shape. Two concrete consequences: a caller could exhaust the sync quota
+ * with junk keys and break settings for the whole profile, and a wrong-typed `allowlist` (a string
+ * instead of an array) makes every `.some()` call in the engine throw — which the checks catch and
+ * swallow, silently turning off a signal.
+ *
+ * @param {Partial<typeof DEFAULT_SETTINGS>} patch
+ */
+export function sanitizeSettings(patch) {
+  const clean = {};
+  if (!patch || typeof patch !== 'object') return clean;
+
+  for (const [key, fallback] of Object.entries(DEFAULT_SETTINGS)) {
+    if (!Object.hasOwn(patch, key)) continue;
+    const value = patch[key];
+
+    if (typeof fallback === 'boolean') {
+      if (typeof value === 'boolean') clean[key] = value;
+    } else if (Array.isArray(fallback)) {
+      if (Array.isArray(value)) {
+        clean[key] = value
+          .filter((v) => typeof v === 'string' && v.length <= 253)
+          .map((v) => v.trim().toLowerCase())
+          .filter(Boolean)
+          .slice(0, 1000);
+      }
+    } else if (typeof fallback === 'string') {
+      if (typeof value === 'string' && value.length <= 2048) clean[key] = value;
+    }
+  }
+
+  // Sensitivity is an enum, not free text: an unknown value would silently fall back to balanced
+  // thresholds while the UI showed something else.
+  if (clean.sensitivity && !Object.values(SENSITIVITY).includes(clean.sensitivity)) {
+    delete clean.sensitivity;
+  }
+  return clean;
+}
+
 /** @param {Partial<typeof DEFAULT_SETTINGS>} patch */
 export async function writeSettings(patch) {
-  if (!hasStorage()) return { ...DEFAULT_SETTINGS, ...patch };
-  await chrome.storage.sync.set(patch);
+  const clean = sanitizeSettings(patch);
+  if (!hasStorage()) return { ...DEFAULT_SETTINGS, ...clean };
+  await chrome.storage.sync.set(clean);
   return readSettings();
 }
 

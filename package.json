@@ -10,10 +10,15 @@
     "smoke": "node tests/manual/serve.mjs",
     "test": "vitest run",
     "e2e": "npm run build && node tests/e2e/run.mjs",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "site": "node site/build.mjs",
+    "site:dev": "node site/build.mjs --watch --serve"
   },
   "dependencies": {
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
     "framer-motion": "^12.23.12",
+    "gsap": "^3.15.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -23,5 +28,12 @@
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "license": "MIT",
+  "author": "Mohammad Aaquib Jawed <aaquib@aaquibjawed.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iAaquibjawed/inertlink.git"
+  },
+  "homepage": "https://github.com/iAaquibjawed/inertlink"
 }

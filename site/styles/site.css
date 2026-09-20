@@ -1,0 +1,1164 @@
+/**
+ * InertLink site — layout and components.
+ *
+ * Structure follows the direction in tokens.css: a left rail that reads as a URL path, monospace
+ * as the structural voice, and the dissected-hostname device repeated wherever a host appears.
+ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: var(--s-3);
+  top: -4rem;
+  z-index: 100;
+  padding: var(--s-2) var(--s-4);
+  background: var(--paper);
+  color: var(--ink-void);
+  border-radius: 6px;
+  font-weight: 600;
+  transition: top var(--d-fast) var(--e-out);
+}
+.skip:focus-visible {
+  top: var(--s-3);
+}
+
+/* ── Nav ───────────────────────────────────────────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  /* Matches the content column: sections are max-width 1240 + gutter, so the nav's inner edge has
+     to be computed the same way or the wordmark sits left of the headline it labels. */
+  padding-block: var(--s-3);
+  padding-inline: max(var(--gutter), calc(50vw - 620px + var(--gutter)));
+  /* The bar is transparent until you scroll — the hero should own the first screen. */
+  background: color-mix(in srgb, var(--ink-base) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  border-bottom: 1px solid transparent;
+  transition: background var(--d-base) var(--e-out), border-color var(--d-base) var(--e-out);
+}
+.nav[data-scrolled='true'] {
+  background: color-mix(in srgb, var(--ink-base) 92%, transparent);
+  border-bottom-color: var(--ink-line);
+}
+
+.nav__mark {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  flex: none;
+}
+.nav__mark-glyph {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+.nav__mark-text span {
+  color: var(--paper-dim);
+}
+
+.nav__links {
+  display: flex;
+  gap: var(--s-4);
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+}
+.nav__links a {
+  color: var(--paper-dim);
+  text-decoration: none;
+  position: relative;
+  padding: 2px 0;
+  transition: color var(--d-fast) var(--e-out);
+}
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -2px 0;
+  height: 1px;
+  background: var(--safe);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--d-base) var(--e-out);
+}
+.nav__links a:hover,
+.nav__links a[aria-current='true'] {
+  color: var(--paper);
+}
+.nav__links a:hover::after,
+.nav__links a[aria-current='true']::after {
+  transform: scaleX(1);
+}
+
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex: none;
+}
+.nav__ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--paper-dim);
+  text-decoration: none;
+  transition: color var(--d-fast) var(--e-out);
+}
+.nav__ghost:hover {
+  color: var(--paper);
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  /* 44px min target (UX priority 2) once padding + line-height are counted. */
+  min-height: 40px;
+  padding: 0 var(--s-4);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform var(--d-fast) var(--e-out), background var(--d-fast) var(--e-out),
+    border-color var(--d-fast) var(--e-out), box-shadow var(--d-fast) var(--e-out);
+}
+.btn--lg {
+  min-height: 52px;
+  padding: 0 var(--s-5);
+  font-size: 1rem;
+  border-radius: 10px;
+}
+.btn--primary {
+  background: var(--safe);
+  color: var(--ink-void);
+  box-shadow: 0 0 0 0 var(--safe-glow);
+}
+.btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 34px -12px var(--safe-glow);
+}
+.btn--primary:active {
+  transform: translateY(0);
+}
+.btn--ghost {
+  border-color: var(--ink-line-strong);
+  color: var(--paper);
+}
+.btn--ghost:hover {
+  border-color: var(--paper-faint);
+  background: var(--ink-raised);
+}
+
+/* ── Rail ──────────────────────────────────────────────────────────────────────────────── */
+.rail {
+  position: fixed;
+  left: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+.rail__scheme {
+  color: var(--paper-faint);
+}
+.rail__path {
+  color: var(--safe);
+  font-weight: 600;
+}
+.rail__track {
+  width: 1px;
+  height: 7rem;
+  margin-top: var(--s-2);
+  background: var(--ink-line-strong);
+  position: relative;
+  overflow: hidden;
+}
+.rail__fill {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 0;
+  background: var(--safe);
+}
+
+/* ── Layout ────────────────────────────────────────────────────────────────────────────── */
+.hero,
+.section {
+  padding-inline: var(--gutter);
+  margin-inline: auto;
+  max-width: 1240px;
+}
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--s-3);
+  padding-block: calc(var(--s-8) + 3rem) var(--s-7);
+}
+
+/* A single slow ambient wash. One, not a field of blobs — it exists to lift the hero off the
+   ground plane, not to be noticed. */
+.hero__aura {
+  position: absolute;
+  z-index: -1;
+  left: -10%;
+  top: 8%;
+  width: min(74vw, 900px);
+  aspect-ratio: 1;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--safe) 15%, transparent),
+    transparent 62%
+  );
+  filter: blur(46px);
+  opacity: 0.75;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--safe);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--safe) 18%, transparent);
+  flex: none;
+  /* Optically centred on the FIRST line, not the wrapped block. */
+  margin-top: 0.42em;
+}
+
+/* ── The dissected URL — the page's signature ──────────────────────────────────────────── */
+.dissect {
+  position: relative;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-display);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  /* Wrap only at the <wbr> between prefix and owner — the one break that carries meaning. A URL
+     split mid-label (`sec` / `ure-billing`) reads as two domains, which is the opposite of the
+     point the headline is making. */
+  overflow-wrap: normal;
+  word-break: normal;
+  max-width: 100%;
+}
+.dissect > span {
+  white-space: nowrap;
+}
+.dissect__scheme,
+.dissect__path {
+  color: var(--paper-faint);
+}
+/* Anything before the registrable domain is text an attacker can buy. It reads as noise. */
+.dissect__prefix {
+  color: var(--paper-faint);
+}
+/* The registrable domain — the answer. */
+.dissect__owner {
+  color: var(--danger);
+  font-weight: 700;
+  position: relative;
+}
+.dissect__caret {
+  display: inline-block;
+  width: 3px;
+  height: 0.82em;
+  margin-left: 0.06em;
+  vertical-align: -0.08em;
+  background: var(--safe);
+  opacity: 0;
+}
+
+.hero__thesis {
+  margin: var(--s-3) 0 0;
+  font-size: clamp(1.4rem, 2.6vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  max-width: 26ch;
+}
+.hero__thesis em {
+  font-style: normal;
+  color: var(--paper-dim);
+}
+
+.hero__sub {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--paper-dim);
+}
+
+.hero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+
+.hero__hint {
+  margin: var(--s-2) 0 0;
+  font-size: var(--t-small);
+  color: var(--paper-faint);
+  max-width: var(--measure);
+}
+code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  color: var(--paper-dim);
+  background: var(--ink-raised);
+  border: 1px solid var(--ink-line);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+}
+
+/* ── Sections ──────────────────────────────────────────────────────────────────────────── */
+.section {
+  padding-block: var(--s-9);
+  border-top: 1px solid var(--ink-line);
+}
+.section__head {
+  max-width: var(--measure);
+  margin-bottom: var(--s-7);
+}
+.section__num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  color: var(--safe);
+  margin-bottom: var(--s-3);
+}
+.section__title {
+  margin: 0 0 var(--s-3);
+  font-size: var(--t-h2);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+.section__lede {
+  margin: 0;
+  color: var(--paper-dim);
+}
+
+/* ── Specimens ─────────────────────────────────────────────────────────────────────────── */
+.specimens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: var(--s-3);
+}
+.specimen {
+  display: block;
+  padding: var(--s-4);
+  border: 1px solid var(--ink-line);
+  border-radius: 12px;
+  background: var(--ink-raised);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--d-base) var(--e-out), background var(--d-base) var(--e-out),
+    transform var(--d-base) var(--e-out);
+}
+.specimen:hover {
+  border-color: var(--ink-line-strong);
+  background: color-mix(in srgb, var(--ink-raised) 70%, var(--ink-base));
+  transform: translateY(-2px);
+}
+.specimen__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+  margin-bottom: var(--s-2);
+}
+.specimen__url {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  word-break: break-all;
+  color: var(--paper-faint);
+}
+/* Same device as the badge and the hero: owner bright, everything before it dimmed. */
+.specimen__owner {
+  color: var(--paper);
+  font-weight: 600;
+}
+.specimen__why {
+  display: block;
+  margin-top: var(--s-2);
+  font-size: var(--t-small);
+  color: var(--paper-dim);
+}
+
+.specimens__note {
+  margin-top: var(--s-5);
+  font-size: var(--t-small);
+  color: var(--paper-faint);
+  max-width: var(--measure);
+}
+
+/* ── Checks ────────────────────────────────────────────────────────────────────────────── */
+.checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  background: var(--ink-line);
+  border: 1px solid var(--ink-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.check {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--s-2) var(--s-4);
+  align-items: baseline;
+  padding: var(--s-4);
+  background: var(--ink-base);
+}
+.check__id {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.check__weight {
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--paper-faint);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.check__what {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--paper-dim);
+  font-size: var(--t-small);
+}
+.check__bar {
+  grid-column: 1 / -1;
+  height: 2px;
+  background: var(--ink-line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.check__fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: var(--tint, var(--unknown));
+}
+
+/* ── Meter ─────────────────────────────────────────────────────────────────────────────── */
+.meter {
+  border: 1px solid var(--ink-line);
+  border-radius: 14px;
+  background: var(--ink-raised);
+  padding: var(--s-6) var(--s-5) var(--s-5);
+}
+.meter__readout {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-4);
+  margin-bottom: var(--s-5);
+}
+.meter__score {
+  font-family: var(--font-mono);
+  font-size: clamp(3rem, 9vw, 5.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper);
+}
+.meter__verdict {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+.meter__verdict[data-verdict='safe'] {
+  color: var(--safe);
+}
+.meter__verdict[data-verdict='caution'] {
+  color: var(--caution);
+}
+.meter__verdict[data-verdict='danger'] {
+  color: var(--ink-void);
+  background: var(--danger-fill);
+  border-color: transparent;
+}
+
+.meter__control input[type='range'] {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  cursor: grab;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.meter__control input[type='range']:active {
+  cursor: grabbing;
+}
+.meter__control input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--safe) 0 20%,
+    var(--caution) 20% 40%,
+    var(--danger-fill) 40% 100%
+  );
+}
+.meter__control input[type='range']::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--safe) 0 20%,
+    var(--caution) 20% 40%,
+    var(--danger-fill) 40% 100%
+  );
+}
+.meter__control input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 3px solid var(--ink-base);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+.meter__control input[type='range']::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 3px solid var(--ink-base);
+}
+
+.meter__scale {
+  position: relative;
+  height: 2.5rem;
+  margin-top: var(--s-1);
+}
+.meter__tick {
+  position: absolute;
+  left: var(--at);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+}
+.meter__tick b {
+  color: var(--paper-dim);
+  font-weight: 600;
+}
+.meter__help {
+  margin: var(--s-4) 0 0;
+  font-size: var(--t-small);
+  color: var(--paper-faint);
+  max-width: var(--measure);
+}
+
+/* ── Privacy claims ────────────────────────────────────────────────────────────────────── */
+.claims {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: var(--s-5);
+}
+.claim {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--ink-line-strong);
+}
+.claim h3 {
+  margin: 0 0 var(--s-2);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.claim p {
+  margin: 0;
+  color: var(--paper-dim);
+  font-size: var(--t-small);
+}
+
+/* ── Steps ─────────────────────────────────────────────────────────────────────────────── */
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  gap: var(--s-3);
+  max-width: 780px;
+}
+.steps li {
+  counter-increment: step;
+  /* NOT grid. A grid container turns every child — including each inline <code> and each bare
+     text run — into its own grid item, which stacked "Open / chrome://extensions / and turn on"
+     onto separate lines and destroyed the sentence. The step number is positioned instead. */
+  position: relative;
+  padding-left: 2.75rem;
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--ink-line);
+  line-height: 1.7;
+}
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  color: var(--safe);
+}
+.steps code {
+  word-break: break-all;
+}
+.steps__warn {
+  color: var(--caution);
+  font-size: var(--t-small);
+}
+
+/* ── Owner ─────────────────────────────────────────────────────────────────────────────── */
+.owner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: var(--s-6);
+  align-items: start;
+}
+.owner__name {
+  margin: 0;
+  font-size: var(--t-h2);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+.owner__role {
+  margin: var(--s-2) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--paper-dim);
+}
+.owner__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  background: var(--ink-line);
+  border-block: 1px solid var(--ink-line);
+}
+.owner__links a {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-3) 0;
+  background: var(--ink-base);
+  text-decoration: none;
+  transition: background var(--d-fast) var(--e-out), padding-left var(--d-base) var(--e-out);
+}
+.owner__links a:hover {
+  background: var(--ink-raised);
+  padding-left: var(--s-3);
+}
+.owner__key {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+}
+.owner__val {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  color: var(--paper);
+  word-break: break-all;
+}
+
+/* ── Foot ──────────────────────────────────────────────────────────────────────────────── */
+.foot {
+  padding: var(--s-6) var(--gutter) var(--s-7);
+  max-width: 1240px;
+  margin-inline: auto;
+  border-top: 1px solid var(--ink-line);
+}
+.foot p {
+  margin: 0;
+  max-width: var(--measure);
+}
+.foot__meta {
+  margin-top: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--paper-faint);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .rail {
+    display: none;
+  }
+  .nav__links {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  /* The nav row has to fit 390px: tighten the gutter, drop the "Source" word (the mark stays,
+     and it keeps its aria-label), and shrink the button. Measured against a 390px viewport —
+     an earlier pass overflowed by 5px and produced a horizontally scrolling page. */
+  .nav {
+    gap: var(--s-3);
+    padding-inline: var(--s-3);
+  }
+  .nav__ghost {
+    font-size: 0;
+    gap: 0;
+  }
+  .nav__ghost svg {
+    width: 18px;
+    height: 18px;
+  }
+  .nav__actions {
+    margin-left: auto;
+  }
+  .btn {
+    padding: 0 var(--s-3);
+  }
+  .hero,
+  .section,
+  .foot {
+    padding-inline: var(--s-3);
+  }
+  .hero {
+    min-height: auto;
+    padding-block: calc(var(--s-9) + 2rem) var(--s-7);
+  }
+  .section {
+    padding-block: var(--s-8);
+  }
+  .meter__readout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-2);
+  }
+}
+
+/* Reduced motion reduces movement, never information. Anything GSAP animates is set to its final
+   state by the script; these rules cover the CSS-only transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .btn--primary:hover,
+  .specimen:hover {
+    transform: none;
+  }
+}
+
+/* ══ The Machine ═══════════════════════════════════════════════════════════════════════════
+   A pinned, scroll-scrubbed walkthrough. The stage is a fixed-height box so nothing reflows as
+   acts swap; everything inside is positioned and animated on transform/opacity only. */
+
+.machine {
+  border-top: 1px solid var(--ink-line);
+}
+.machine__pin {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--s-5);
+  padding: var(--s-7) max(var(--gutter), calc(50vw - 620px + var(--gutter)));
+}
+.machine__head {
+  max-width: 54ch;
+  min-height: 9.5rem;
+}
+.machine__title {
+  margin: 0 0 var(--s-2);
+  font-size: var(--t-h2);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+}
+.machine__caption {
+  margin: 0;
+  color: var(--paper-dim);
+  max-width: 52ch;
+}
+
+.stage {
+  position: relative;
+  height: min(52svh, 460px);
+}
+
+/* ── Act 1: the mock message ── */
+.mock {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: min(100%, 440px);
+  border: 1px solid var(--ink-line-strong);
+  border-radius: 12px;
+  background: var(--ink-raised);
+  overflow: hidden;
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.9);
+}
+.mock__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--ink-void);
+  border-bottom: 1px solid var(--ink-line);
+}
+.mock__bar i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ink-line-strong);
+}
+.mock__bar span {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  color: var(--paper-faint);
+}
+.mock__body {
+  padding: var(--s-4);
+}
+.mock__from {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  color: var(--paper-faint);
+}
+.mock__subject {
+  margin: 6px 0 var(--s-2);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.mock__text {
+  margin: 0 0 var(--s-4);
+  font-size: var(--t-small);
+  color: var(--paper-dim);
+}
+.mock__link {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: var(--t-small);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ── The auto-driven cursor ── */
+.ghost {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+.ghost__arrow {
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  width: 22px;
+  height: 22px;
+  fill: var(--paper);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+.ghost__ring {
+  position: absolute;
+  inset: 0;
+  width: 44px;
+  height: 44px;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+.ghost__ring circle {
+  fill: none;
+  stroke: var(--safe);
+  stroke-width: 2.5;
+  stroke-dasharray: 119.4;
+  stroke-dashoffset: 119.4;
+}
+
+/* ── Acts 3–4: the lifted, dissected URL ── */
+.strip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--s-3);
+  opacity: 0;
+}
+.strip__url {
+  font-family: var(--font-mono);
+  font-size: clamp(0.85rem, 2.1vw, 1.65rem);
+  letter-spacing: -0.03em;
+  line-height: 1.35;
+  word-break: break-all;
+}
+.seg {
+  color: var(--paper-faint);
+  transition: color var(--d-base) var(--e-out);
+}
+.seg--fake {
+  color: var(--paper-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--danger);
+  text-decoration-thickness: 2px;
+}
+.seg--owner {
+  color: var(--danger);
+  font-weight: 700;
+}
+.strip__labels {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  min-height: 1.6rem;
+}
+/* When the URL fits on one line, each label is positioned under the segment it names and grows a
+   tick up to it. A label that floats in the middle of the row is just decoration; a label that
+   points at its segment is the explanation. Falls back to the flex row when the URL wraps. */
+.strip__labels[data-aligned='true'] {
+  display: block;
+}
+.strip__labels[data-aligned='true'] .lab {
+  position: absolute;
+  top: 0.55rem;
+  left: var(--x, 0);
+  white-space: nowrap;
+}
+.strip__labels[data-aligned='true'] .lab::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -0.5rem;
+  width: 1px;
+  height: 0.38rem;
+  background: currentColor;
+  opacity: 0.55;
+}
+.lab {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+  opacity: 0;
+}
+.lab--bad {
+  color: var(--danger);
+}
+.lab--owner {
+  color: var(--safe);
+}
+.strip__norequest {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--paper-dim);
+  opacity: 0;
+}
+.strip__x {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--safe);
+  position: relative;
+}
+.strip__x::after {
+  content: '';
+  position: absolute;
+  inset: -1px 3px;
+  border-top: 1.5px solid var(--safe);
+  transform: rotate(-45deg);
+  top: 4px;
+}
+
+/* ── Act 5: checks firing ── */
+.fire {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--s-5);
+  align-items: center;
+  opacity: 0;
+}
+.fire__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fire__item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 8px 12px;
+  border: 1px solid var(--ink-line);
+  border-radius: 8px;
+  background: var(--ink-raised);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--paper-faint);
+  opacity: 0.35;
+}
+.fire__item[data-hit='true'] {
+  color: var(--paper);
+  border-color: color-mix(in srgb, var(--danger) 50%, var(--ink-line));
+  opacity: 1;
+}
+.fire__w {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--danger);
+}
+.fire__item[data-hit='false'] .fire__w {
+  color: var(--paper-faint);
+}
+.fire__score {
+  text-align: right;
+}
+.fire__num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: clamp(3rem, 9vw, 6rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+.fire__of {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+}
+
+@media (max-width: 720px) {
+  .stage {
+    height: min(58svh, 420px);
+  }
+  .fire {
+    grid-template-columns: 1fr;
+    align-content: center;
+  }
+  .fire__score {
+    text-align: left;
+  }
+  .machine__head {
+    min-height: 11rem;
+  }
+}
+
+/* With reduced motion the acts cannot overlap in place — they stack and read as six steps. */
+@media (prefers-reduced-motion: reduce) {
+  .machine__pin {
+    min-height: auto;
+  }
+  .stage {
+    height: auto;
+    display: grid;
+    gap: var(--s-6);
+  }
+  .mock,
+  .strip,
+  .fire {
+    position: static;
+    inset: auto;
+    opacity: 1;
+  }
+  .lab,
+  .strip__norequest {
+    opacity: 1;
+  }
+  .ghost {
+    display: none;
+  }
+}

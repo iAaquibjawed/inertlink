@@ -152,3 +152,44 @@ tests/         vitest + golden URL fixtures (the spec) + a manual smoke page.
 | `optional_host_permissions` | Page access, granted by you, one site at a time. Not requested at install. |
 
 Full reasoning in `docs/DECISIONS.md` (ADR-0003, ADR-0008).
+
+## The landing page
+
+`site/` is the public page for InertLink, built with the same no-CDN rule as the extension
+(GSAP and both variable fonts are bundled, not fetched).
+
+```bash
+npm run site        # build once → site/dist/
+npm run site:dev    # watch + serve on :5173
+```
+
+Its demo imports `src/engine/` and `src/content/badge.js` **directly**, so the verdicts on the page
+are computed by the shipping engine and the badge is the real component — the page cannot drift
+from the product, and a page selling "this doesn't lie about links" does not lie about itself.
+
+## Deploying the page
+
+`render.yaml` is a Render blueprint: **New → Blueprint → point it at this repo**. It builds with
+`npm ci && npm run site` and publishes `site/dist/`.
+
+The blueprint lives in the repo on purpose. It holds no secrets and cannot — Render keeps
+credentials in its own dashboard, and a static site has no runtime environment to leak. What it
+does hold is the build command and the response headers, which are the part of a deploy actually
+worth reviewing in public. They are visible on every response anyway; hiding the file would make
+the deploy unreproducible and conceal nothing.
+
+The Content-Security-Policy is strict (`default-src 'none'`) and only achievable because the page
+is genuinely self-contained: no CDN font, no CDN script, no analytics. If you add a third-party
+asset, that header is the thing that will break — which is the point of having it.
+
+**Do not put cloud credentials in this repo or in CI secrets.** Nothing here needs them. If you
+later automate a deploy to AWS instead, use OIDC role assumption rather than a long-lived access
+key.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Mohammad Aaquib Jawed.
+
+Open source on purpose: "zero network by default" is a claim, and the only way anyone can check it
+is to read the code. A Chrome extension ships its source to every user anyway — a `.crx` is a zip —
+so closing it would hide the code from honest people only.

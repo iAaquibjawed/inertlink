@@ -1,0 +1,74 @@
+# Render blueprint for the InertLink landing page.
+#
+# This file is deliberately IN the public repo. It contains no secrets and cannot: Render holds
+# credentials in its own dashboard, and a static site has no runtime environment to leak. What it
+# does contain is the build command, the publish path, and the response headers — which is exactly
+# the part of a deployment worth reviewing in public. Hiding it would conceal nothing (the headers
+# are visible on any response) while making the deploy unreproducible.
+#
+# Deploy: Render → New → Blueprint → point at this repo. Nothing to configure by hand.
+
+services:
+  - type: web
+    name: inertlink
+    runtime: static
+    # `npm ci` not `npm install`: the lockfile is committed, and a marketing page should build
+    # from exactly the dependency tree that was tested.
+    buildCommand: npm ci && npm run site
+    staticPublishPath: ./site/dist
+    pullRequestPreviewsEnabled: true
+
+    # A subdomain of a domain you already own costs nothing: DNS providers do not bill per record,
+    # and Render issues the TLS certificate itself. Declared here so the deploy is reproducible
+    # rather than a setting someone once clicked.
+    domains:
+      - inertlink.aaquibjawed.com
+
+    headers:
+      # A strict CSP is achievable here only because the page is genuinely self-contained —
+      # no CDN font, no CDN script, no analytics. `style-src` needs 'unsafe-inline' because GSAP
+      # animates by writing style attributes, and the hover badge builds a <style> element inside
+      # its shadow root. Everything else is locked to 'self'.
+      - path: /*
+        name: Content-Security-Policy
+        value: >-
+          default-src 'none';
+          script-src 'self';
+          style-src 'self' 'unsafe-inline';
+          img-src 'self' data:;
+          font-src 'self';
+          connect-src 'self';
+          base-uri 'none';
+          form-action 'none';
+          frame-ancestors 'none'
+
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+
+      # No camera, mic, geolocation or payment is used. Saying so is cheap and permanent.
+      - path: /*
+        name: Permissions-Policy
+        value: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()
+
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+
+      - path: /*
+        name: Cross-Origin-Opener-Policy
+        value: same-origin
+
+      # Fingerprinted asset filenames (esbuild emits fonts as name-HASH.woff2), so they can be
+      # cached hard. The HTML must not be, or a deploy would not reach anyone already on the page.
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache

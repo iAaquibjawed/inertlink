@@ -1,17 +1,13 @@
 /**
- * Host-permission patterns and the rules for turning them into content-script registrations.
+ * Host-permission patterns, and the rules for turning them into content-script registrations.
  *
- * Pure — no `chrome.*` — so the registration filter is unit-testable. It is the one piece of the
- * permission path that silently decides whether the extension runs at all, and a bug here looks
- * exactly like "the extension is broken" (ADR-0010 was that bug in a different guise).
+ * Pure (no `chrome.*`) so it is unit-testable: this filter silently decides whether the extension
+ * runs at all, and a bug here is indistinguishable from the extension being broken.
  */
 
 /**
- * The two patterns in `optional_host_permissions`. Requesting both is "run everywhere" — one
- * prompt, permanent, and the only way to stop clicking the toolbar icon on every new site.
- *
- * This is still opt-in and still not requested at install (golden rule 4). Least privilege means
- * the *default* is narrow and the user chooses; it does not mean refusing to let them choose.
+ * The two patterns in `optional_host_permissions`. Requesting both means "run everywhere": one
+ * prompt, permanent. Still opt-in and never requested at install (golden rule 4).
  */
 export const ALL_SITES = Object.freeze(['http://*/*', 'https://*/*']);
 

@@ -15,21 +15,17 @@ import { DANGEROUS_SCHEMES } from '../parse.js';
 const CREDENTIAL_PATH = /(login|signin|sign-in|log-in|account|verify|secure|auth|password|wallet|billing|payment|update)/i;
 
 /**
- * Grade a non-navigating scheme by what it can actually do to the user.
+ * Grade a non-navigating scheme by what it can actually do to the user. A flat "all dangerous"
+ * tier is wrong in both directions:
  *
- * These were previously one flat "danger" tier, which was wrong in both directions:
+ * - `javascript:` with a body runs in the page's own origin, which the site already controls, so
+ *   it grants no new capability. Earns "check this", not "you are being robbed". Inert forms such
+ *   as `javascript:void(0)` never reach here — parse.js drops them.
+ * - `vbscript:` has no legitimate remaining use; it appears only in legacy IE exploitation.
+ * - `data:text/html` renders attacker-authored markup. Chrome has blocked top-level `data:`
+ *   navigation from links since Chrome 60, so the realistic path is a context-menu open.
  *
- * - **`javascript:` with real code runs in the page's own origin.** The site can already execute
- *   anything it likes there — an inline handler grants it nothing new. On a first-party page this
- *   is ordinary plumbing, so it earns "check this", not "you are being robbed". (An InertLink such as
- *   `javascript:void(0)` never reaches here at all; parse.js drops it.)
- * - **`vbscript:` has no legitimate use left.** It only appears in legacy IE exploitation. Full
- *   weight.
- * - **`data:text/html` renders attacker-authored markup.** Chrome has blocked top-level `data:`
- *   navigation from links since Chrome 60, so the realistic path is a context-menu open — real,
- *   but not the emergency a flat danger tier implied.
- *
- * Copy invites verification rather than asserting harm. A warning the user cannot act on is a
+ * Copy invites verification rather than asserting harm: a warning the user cannot act on is a
  * warning they learn to dismiss.
  */
 function gradeScheme(parsed) {

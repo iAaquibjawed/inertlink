@@ -201,14 +201,24 @@ async function refreshBlocklist() {
     const settings = await readSettings();
     if (!settings.enabled || !settings.onlineChecks || !settings.blocklistUrl) return;
 
-    const res = await fetch(settings.blocklistUrl, { cache: 'no-store', credentials: 'omit' });
+    // https only. Over cleartext this list is attacker-controllable in transit, and a blocklist
+    // an attacker can edit is a blocklist that can be emptied.
+    let feed;
+    try {
+      feed = new URL(settings.blocklistUrl);
+    } catch {
+      return;
+    }
+    if (feed.protocol !== 'https:') return;
+
+    const res = await fetch(feed.href, { cache: 'no-store', credentials: 'omit', redirect: 'error' });
     if (!res.ok) return;
 
     const data = await res.json();
     const hosts = (Array.isArray(data) ? data : (data.hosts ?? []))
-      .filter((h) => typeof h === 'string')
+      .filter((h) => typeof h === 'string' && h.length <= 253) // RFC 1035 max hostname length
       .map((h) => h.trim().toLowerCase())
-      .filter(Boolean)
+      .filter((h) => /^[a-z0-9.-]+$/.test(h))
       .slice(0, 50000);
 
     if (hosts.length) {
@@ -227,7 +237,48 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 /* ── message router ────────────────────────────────────────────────────────────────────────── */
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+/**
+ * Messages a content script is allowed to send.
+ *
+ * The content script runs on every granted page and is the component closest to hostile input,
+ * so it is treated as the least trusted caller. It may ask for a verdict and nothing else.
+ *
+ * Without this, a compromised content script could send SET_SETTINGS with
+ * `{ allowlist: ['attacker.example'] }` and permanently silence this extension for that domain,
+ * on every tab, synced to the user's account — disabling the protection without the user seeing
+ * anything. That is the worst failure this product has, so the boundary is enforced here rather
+ * than assumed.
+ */
+const CONTENT_SCRIPT_MESSAGES = new Set([MSG.CHECK_URL]);
+
+/**
+ * Is this message from one of our own extension pages, rather than from a content script?
+ *
+ * NOT `Boolean(sender.tab)` — the options page opens in a tab too, so that test classified our
+ * own UI as untrusted and broke activation. The reliable discriminator is the sender's origin:
+ * an extension page is served from `chrome-extension://<id>`, a content script reports the origin
+ * of the web page it is running on.
+ */
+const EXTENSION_ORIGIN = chrome.runtime.getURL('').replace(/\/$/, '');
+
+function isFromExtensionPage(sender) {
+  if (sender?.origin) return sender.origin === EXTENSION_ORIGIN;
+  // `origin` is absent on some older builds; the URL prefix answers the same question.
+  return typeof sender?.url === 'string' && sender.url.startsWith(`${EXTENSION_ORIGIN}/`);
+}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // `externally_connectable` is absent, so web pages cannot reach this listener at all. What can
+  // is our own pages and our own content scripts — and those are not equally trusted.
+  if (sender?.id !== chrome.runtime.id) {
+    sendResponse({ ok: false, error: 'forbidden' });
+    return false;
+  }
+  if (!isFromExtensionPage(sender) && !CONTENT_SCRIPT_MESSAGES.has(message?.type)) {
+    sendResponse({ ok: false, error: 'forbidden' });
+    return false;
+  }
+
   // Every branch is wrapped: a throw in the worker must never surface on the user's page.
   (async () => {
     try {
@@ -239,6 +290,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
         case MSG.SET_SETTINGS:
           return sendResponse(await writeSettings(message.patch ?? {}));
+
 
         case MSG.CLEAR_CACHE: {
           const removed = await clearCache();

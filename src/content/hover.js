@@ -44,21 +44,17 @@ const isPaused = () =>
   !settings.enabled || settings.pausedHosts.some((h) => h === location.hostname);
 
 /**
- * What will this element take me to, if I click it?
+ * Where does this element take you when clicked?
  *
- * An `<a href>` is the obvious case, but it is not the only way a click navigates. Amazon's cart
- * "Delete" and "Save for later" are `<input type="submit">` inside a `<form method="post">` — a
- * click leaves the page exactly like a link does, and we were silent on them. Phishing kits POST
- * credentials to attacker endpoints through the same mechanism, so a submit control's destination
- * is squarely the question this product exists to answer.
+ * An `<a href>` is not the only way a click navigates. A form submit control leaves the page
+ * exactly like a link does, and phishing kits POST credentials to attacker endpoints through
+ * that mechanism — so its destination is in scope. (Distinct from the credential-field warning
+ * parked in CLAUDE.md §7, which is about flagging input fields.)
  *
- * (This is not the credential-field warning parked in CLAUDE.md §7. That is about flagging input
- * fields; this is about where a click goes, which is the core mission.)
- *
- * Reading `action` / `formaction` is string inspection. Nothing is submitted, nothing is fetched
+ * Reading `action` / `formaction` is string inspection: nothing is submitted, nothing is fetched
  * (golden rule 3).
  *
- * @returns {{ el: Element, url: string, text: string }|null}
+ * @returns {{ el: Element, url: string, text: string, inertLink?: boolean }|null}
  */
 function targetFrom(target) {
   if (!(target instanceof Element)) return null;
@@ -309,7 +305,10 @@ const handlers = [
 ];
 
 /** popup → content script. Answers what this tab has seen, so the popup shows real numbers. */
-function onRuntimeMessage(message, _sender, sendResponse) {
+function onRuntimeMessage(message, sender, sendResponse) {
+  // Only our own extension may ask. The tally is small, but it is a record of what the user
+  // hovered on this page, and it is not something to hand to any caller that asks politely.
+  if (sender?.id !== chrome.runtime.id) return undefined;
   if (message?.type !== MSG.GET_TAB_STATE) return undefined;
   sendResponse({
     active: running && !isPaused(),

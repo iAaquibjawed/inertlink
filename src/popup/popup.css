@@ -21,6 +21,9 @@ body {
 }
 
 .il-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-size: var(--il-text-title);
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -30,6 +33,21 @@ body {
 .il-wordmark span {
   color: var(--il-color-fg-muted);
   font-weight: 400;
+}
+/* The supplied logo was drawn for white. Its navy half sits almost exactly on top of the dark
+   popup surface, so dark mode uses the reversed artwork (navy ink lifted to paper, accent green
+   untouched) and light mode uses the original. */
+.il-wordmark-glyph {
+  flex: none;
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: url('../assets/icons/mark-reversed-48.png') center / contain no-repeat;
+}
+@media (prefers-color-scheme: light) {
+  .il-wordmark-glyph {
+    background-image: url('../assets/icons/icon-48.png');
+  }
 }
 
 .il-iconbtn {

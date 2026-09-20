@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>InertLink — see where a link really goes</title>
+    <meta
+      name="description"
+      content="A Chrome extension that tells you whether a link is safe before you click it. Hover any link and a badge names the site that actually owns it. Local-first: no network by default."
+    />
+    <meta name="theme-color" content="#0b0b0d" />
+    <meta property="og:title" content="InertLink — see where a link really goes" />
+    <meta
+      property="og:description"
+      content="Hover a link. Know where it goes. 14 local checks, zero network by default."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./og-card.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- The mark alone, not the full lockup: the wordmark and tagline turn to mush below ~48px. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="./mark-512.png" />
+    <link rel="apple-touch-icon" href="./mark-180.png" />
+    <!-- Emitted by esbuild from the @fontsource imports in main.js. Self-hosted woff2, no CDN. -->
+    <link rel="stylesheet" href="./main.css" />
+    <link rel="stylesheet" href="./styles/tokens.css" />
+    <link rel="stylesheet" href="./styles/site.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <!-- ── Nav ─────────────────────────────────────────────────────────────────────────── -->
+    <header class="nav" id="nav">
+      <a class="nav__mark" href="#top" aria-label="InertLink, back to top">
+        <img
+          class="nav__mark-glyph"
+          src="./mark-dark-512.png"
+          alt=""
+          width="22"
+          height="22"
+          decoding="async"
+        />
+        <span class="nav__mark-text">Inert<span>Link</span></span>
+      </a>
+
+      <nav class="nav__links" aria-label="Sections">
+        <a href="#how">How</a>
+        <a href="#demo">Demo</a>
+        <a href="#checks">Checks</a>
+        <a href="#scoring">Scoring</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="nav__actions">
+        <a
+          class="nav__ghost"
+          href="https://github.com/iAaquibjawed/inertlink"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="15" height="15">
+            <path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.35-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.5 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.25 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z" />
+          </svg>
+          Source
+        </a>
+        <a class="btn btn--primary" href="#install">Install</a>
+      </div>
+    </header>
+
+    <!-- ── Rail: the scroll spine, written as a path ───────────────────────────────────── -->
+    <aside class="rail" aria-hidden="true">
+      <span class="rail__scheme">inertlink</span>
+      <span class="rail__path" id="railPath">/hover</span>
+      <span class="rail__track"><span class="rail__fill" id="railFill"></span></span>
+    </aside>
+
+    <main id="main">
+      <!-- ── Hero ─────────────────────────────────────────────────────────────────────── -->
+      <section class="hero" id="top" data-rail="/hover">
+        <div class="hero__aura" aria-hidden="true"></div>
+
+        <p class="eyebrow" data-anim="eyebrow">
+          <span class="dot" aria-hidden="true"></span>
+          Chrome extension · Manifest V3 · local-first
+        </p>
+
+        <!-- The signature. The headline IS a URL, and it dissects itself: everything before the
+             registrable domain is text anyone can register, and it dims away. -->
+        <h1 class="dissect" id="dissect">
+          <span class="dissect__scheme" data-anim="url">https://</span><span
+            class="dissect__prefix"
+            data-anim="url"
+            >example.com.</span
+          ><wbr /><span class="dissect__owner" data-anim="url" id="dissectOwner"
+            >secure-billing.invalid</span
+          ><wbr /><span class="dissect__path" data-anim="url">/pay</span>
+          <span class="dissect__caret" id="caret" aria-hidden="true"></span>
+        </h1>
+
+        <p class="hero__thesis" data-anim="thesis">
+          You read the first word.<br />
+          <em>Your browser obeys the last one.</em>
+        </p>
+
+        <p class="hero__sub" data-anim="sub">
+          InertLink puts a badge next to your cursor before you click — naming the site that
+          actually owns the link. Fourteen checks, on your device, with no network at all by
+          default.
+        </p>
+
+        <div class="hero__cta" data-anim="cta">
+          <a class="btn btn--primary btn--lg" href="#install">Install for Chrome</a>
+          <a class="btn btn--ghost btn--lg" href="#demo">Try it below ↓</a>
+        </div>
+
+        <p class="hero__hint" data-anim="cta">
+          The badge on this page is the extension's own code, imported from
+          <code>src/content/badge.js</code> &mdash; not a mockup.
+        </p>
+      </section>
+
+
+      <!-- ── The Machine: a pinned, scroll-scrubbed walkthrough of the 250ms ──────────────
+           This is the page's centre of gravity. A visitor who never hovers anything should still
+           come away knowing exactly what the extension does and when. Every act is real content
+           in the DOM, so with reduced motion it degrades to a readable six-step explanation. -->
+      <section class="machine" id="how" data-rail="/how">
+        <div class="machine__pin" id="machinePin">
+          <div class="machine__head">
+            <span class="section__num">00</span>
+            <h2 class="machine__title" id="machineTitle">A quarter of a second</h2>
+            <p class="machine__caption" id="machineCaption">
+              Everything below happens between resting your cursor and deciding to click.
+            </p>
+          </div>
+
+          <div class="stage" id="stage">
+            <!-- ACT 1 — an ordinary looking message -->
+            <div class="mock" id="mock" data-act="1">
+              <div class="mock__bar"><i></i><i></i><i></i><span>mail</span></div>
+              <div class="mock__body">
+                <p class="mock__from">billing@example.com</p>
+                <p class="mock__subject">Your invoice is ready</p>
+                <p class="mock__text">
+                  Hi — your statement for this month is available.
+                </p>
+                <a class="mock__link" id="mockLink" href="#" role="button">View invoice →</a>
+              </div>
+            </div>
+
+            <!-- the auto-driven cursor + dwell ring -->
+            <div class="ghost" id="ghost" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="ghost__arrow"><path d="M5 3l14 8-6 1.5L10 19z"/></svg>
+              <svg viewBox="0 0 44 44" class="ghost__ring"><circle cx="22" cy="22" r="19" /></svg>
+            </div>
+
+            <!-- ACT 3/4 — the href, lifted out and taken apart -->
+            <div class="strip" id="strip" aria-hidden="true">
+              <div class="strip__url" id="stripUrl">
+                <span class="seg" data-seg="scheme">https://</span><span class="seg seg--fake" data-seg="userinfo">example.com@</span><span class="seg seg--owner" data-seg="owner">secure-billing.invalid</span><span class="seg" data-seg="path">/invoice/pay</span>
+              </div>
+              <div class="strip__labels" id="stripLabels">
+                <span class="lab" data-for="scheme">scheme</span>
+                <span class="lab lab--bad" data-for="userinfo">discarded by the browser</span>
+                <span class="lab lab--owner" data-for="owner">the site you actually reach</span>
+                <span class="lab" data-for="path">path</span>
+              </div>
+              <p class="strip__norequest" id="noRequest">
+                <span class="strip__x" aria-hidden="true"></span>
+                read as text · 0 network requests
+              </p>
+            </div>
+
+            <!-- ACT 5 — checks firing, score climbing -->
+            <div class="fire" id="fire" aria-hidden="true">
+              <ul class="fire__list" id="fireList"></ul>
+              <div class="fire__score">
+                <span class="fire__num" id="fireNum">0</span>
+                <span class="fire__of">risk score</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Demo ─────────────────────────────────────────────────────────────────────── -->
+      <section class="section" id="demo" data-rail="/demo">
+        <header class="section__head">
+          <span class="section__num">01</span>
+          <h2 class="section__title">Hover. Don't click.</h2>
+          <p class="section__lede">
+            Rest on a link for a quarter of a second. Every link below is inert — none of them go
+            anywhere — but the verdicts are real, computed by the same engine that ships in the
+            extension.
+          </p>
+        </header>
+
+        <div class="specimens" id="specimens">
+          <!-- filled from the real engine at runtime, so the page cannot drift from the product -->
+        </div>
+
+        <p class="specimens__note">
+          Nothing here resolves. Every hostname uses an RFC&nbsp;2606 reserved name
+          (<code>example.com</code>, <code>.invalid</code>) or an RFC&nbsp;5737 documentation IP —
+          the same rule the test fixtures follow.
+        </p>
+      </section>
+
+      <!-- ── Checks ───────────────────────────────────────────────────────────────────── -->
+      <section class="section" id="checks" data-rail="/checks">
+        <header class="section__head">
+          <span class="section__num">02</span>
+          <h2 class="section__title">What it catches</h2>
+          <p class="section__lede">
+            Each signal is an independent check that returns a weight and a reason. They stack —
+            no single rule decides a verdict, which is what keeps one bad heuristic from painting
+            the web red.
+          </p>
+        </header>
+
+        <ul class="checks" id="checksList">
+          <!-- weights read from the engine's scoring table at runtime -->
+        </ul>
+      </section>
+
+      <!-- ── Scoring ──────────────────────────────────────────────────────────────────── -->
+      <section class="section" id="scoring" data-rail="/scoring">
+        <header class="section__head">
+          <span class="section__num">03</span>
+          <h2 class="section__title">How a verdict is reached</h2>
+          <p class="section__lede">
+            Weights are summed into one score, then read against two thresholds. Drag the score.
+          </p>
+        </header>
+
+        <div class="meter" id="meter">
+          <div class="meter__readout">
+            <span class="meter__score" id="meterScore">0</span>
+            <span class="meter__verdict" id="meterVerdict" data-verdict="safe">Safe</span>
+          </div>
+
+          <label class="meter__control">
+            <span class="sr-only">Risk score</span>
+            <input
+              type="range"
+              id="meterRange"
+              min="0"
+              max="100"
+              value="0"
+              step="1"
+              aria-describedby="meterHelp"
+            />
+          </label>
+
+          <div class="meter__scale" aria-hidden="true">
+            <span class="meter__tick" style="--at: 20%"><b>20</b>caution</span>
+            <span class="meter__tick" style="--at: 40%"><b>40</b>danger</span>
+          </div>
+
+          <p class="meter__help" id="meterHelp">
+            Thresholds shown are the <strong>balanced</strong> setting. Strict flags at 12 / 30,
+            relaxed at 30 / 55 — the whole ramp shifts, so sensitivity is one honest dial rather
+            than a per-check toggle.
+          </p>
+        </div>
+      </section>
+
+      <!-- ── Privacy ──────────────────────────────────────────────────────────────────── -->
+      <section class="section section--privacy" id="privacy" data-rail="/privacy">
+        <header class="section__head">
+          <span class="section__num">04</span>
+          <h2 class="section__title">It doesn't phone home</h2>
+        </header>
+
+        <div class="claims">
+          <article class="claim">
+            <h3>Zero network by default</h3>
+            <p>
+              Every check runs against data bundled in the extension. A fresh install makes no
+              requests at all — not on install, not on hover, not ever, unless you switch on the
+              optional second opinion.
+            </p>
+          </article>
+          <article class="claim">
+            <h3>Hovering never touches the link</h3>
+            <p>
+              We read the URL string. We never follow it. Resolving a shortener to see where it
+              lands would be a request to the attacker's server, from your IP, triggered by a mouse
+              movement you didn't mean as a click.
+            </p>
+          </article>
+          <article class="claim">
+            <h3>Hostname only, if you opt in</h3>
+            <p>
+              Turn on reputation checks and only the <em>hostname</em> is ever sent — never the
+              path, never the query string. Results are cached, so a host is never sent twice.
+            </p>
+          </article>
+          <article class="claim">
+            <h3>It runs where you allow it</h3>
+            <p>
+              No site access is requested at install. Click the toolbar icon and it works on that
+              tab for that visit; grant a site, or every site, only if you want it always on.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── Install ──────────────────────────────────────────────────────────────────── -->
+      <section class="section" id="install" data-rail="/install">
+        <header class="section__head">
+          <span class="section__num">05</span>
+          <h2 class="section__title">Install it</h2>
+          <p class="section__lede">
+            Not on the Web Store yet. Load it unpacked — it takes about a minute.
+          </p>
+        </header>
+
+        <ol class="steps">
+          <li>
+            <code>git clone https://github.com/iAaquibjawed/inertlink.git</code>
+          </li>
+          <li><code>npm install &amp;&amp; npm run build</code></li>
+          <li>
+            Open <code>chrome://extensions</code> and turn on <strong>Developer mode</strong>
+          </li>
+          <li>
+            <strong>Load unpacked</strong> → select the <code>dist/</code> folder
+            <span class="steps__warn">— not the repo folder above it</span>
+          </li>
+          <li>Open any page, click the InertLink icon, and hover a link</li>
+        </ol>
+      </section>
+
+      <!-- ── Contact ──────────────────────────────────────────────────────────────────── -->
+      <section class="section section--contact" id="contact" data-rail="/contact">
+        <header class="section__head">
+          <span class="section__num">06</span>
+          <h2 class="section__title">Built by</h2>
+        </header>
+
+        <div class="owner">
+          <div class="owner__id">
+            <p class="owner__name">Mohammad Aaquib Jawed</p>
+            <p class="owner__role">AI / Machine Learning Engineer</p>
+          </div>
+
+          <ul class="owner__links">
+            <li>
+              <a href="https://aaquibjawed.com/" target="_blank" rel="noopener noreferrer">
+                <span class="owner__key">site</span>
+                <span class="owner__val">aaquibjawed.com</span>
+              </a>
+            </li>
+            <li>
+              <!-- Assembled at runtime so the published HTML carries no scrapeable mailto:.
+                   The <noscript> copy keeps it usable and readable without JavaScript — an
+                   address a human cannot read is not privacy, it is just a broken link. -->
+              <a id="mailLink" data-u="aaquib" data-d="aaquibjawed.com" href="#contact">
+                <span class="owner__key">email</span>
+                <span class="owner__val" id="mailText">
+                  <noscript>aaquib [at] aaquibjawed [dot] com</noscript>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://github.com/iAaquibjawed"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="owner__key">github</span>
+                <span class="owner__val">iAaquibjawed</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.linkedin.com/in/md-aaquib-jawed-0b15a3205"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="owner__key">linkedin</span>
+                <span class="owner__val">md-aaquib-jawed</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>
+        <strong>InertLink</strong> — a link points somewhere, or it doesn't. Either way you should
+        be told.
+      </p>
+      <p class="foot__meta">
+        MIT · built in the open ·
+        <a href="https://github.com/iAaquibjawed/inertlink" target="_blank" rel="noopener noreferrer"
+          >github.com/iAaquibjawed/inertlink</a
+        >
+      </p>
+    </footer>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

@@ -171,6 +171,10 @@ export default function App() {
     <motion.div className="il-popup" variants={listStagger} initial="initial" animate="animate">
       <motion.header className="il-head" variants={item}>
         <h1 className="il-wordmark">
+          {/* The mark, not the full lockup — the popup header is 32px tall and the lockup's
+              tagline would be unreadable. A <span> rather than an <img> so CSS can swap in the
+              reversed artwork on dark: the logo's navy half is invisible on this surface. */}
+          <span className="il-wordmark-glyph" aria-hidden="true" />
           Inert<span>Link</span>
         </h1>
 

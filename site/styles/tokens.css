@@ -1,0 +1,154 @@
+/**
+ * InertLink site tokens.
+ *
+ * DIRECTION — "The Address Bar". The page borrows the vernacular of URL inspection: monospace as a
+ * structural voice rather than a code style, a left rail that reads like a path, and the one idea
+ * the product actually owns — that the *registrable domain* is the answer and everything before it
+ * is noise — used as a typographic device throughout.
+ *
+ * PALETTE — the only colour on this site is the product's own verdict ramp. Jade, amber and
+ * vermilion are InertLink's vocabulary; borrowing them as the site palette makes the page feel like
+ * the thing it is selling, and means no colour here is decorative. [adapted]
+ *
+ * The generator proposed slate-blue #1E293B + acid green #22C55E with `--color-ring` set to the
+ * same value as `--color-primary` — an invisible focus ring, the same defect ADR-0005 rejected the
+ * first time. Rejected again, for the same reason, and the ring is sky so it is actually visible.
+ *
+ * Base is a WARM near-black, not the usual blue-slate: the verdict ramp runs warm (jade → amber →
+ * vermilion), and a cool ground fights it.
+ */
+
+:root {
+  /* ── Ground ─────────────────────────────────────────────────── */
+  --ink-void: #08080a;
+  --ink-base: #0b0b0d;
+  --ink-raised: #121215;
+  --ink-line: #1e1e23;
+  --ink-line-strong: #2c2c33;
+
+  /* Paper is slightly warm — pure #fff on warm black reads clinical. */
+  --paper: #f2f0ed;
+  --paper-dim: #a9a7a3;
+  /* Measured, not eyeballed. #6e6c69 was 3.76:1 on the base and 3.57:1 on the raised surface —
+     under AA, and it carries a lot of small text here (specimen URLs, labels, ticks, footer).
+     #858380 clears 4.5:1 on the *worst* surface (--ink-raised, 4.95:1) while staying warm and
+     clearly recessive against --paper-dim. */
+  --paper-faint: #858380;
+
+  /* ── Verdict ramp — the product's vocabulary, reused verbatim ── */
+  --safe: #5bd6a4;
+  --caution: #f2b441;
+  --danger: #ff6a55;
+  --unknown: #93a0b4;
+
+  --danger-fill: #e0412c;
+  --danger-glow: rgba(224, 65, 44, 0.42);
+  --safe-glow: rgba(91, 214, 164, 0.3);
+
+  /* Interactive + focus. Sky, so it is visible on the warm ground — the generator's ring was not. */
+  --ring: #38bdf8;
+
+  /* ── Type ───────────────────────────────────────────────────── */
+  --font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+  /* Display scale. Clamped so the hero never needs a horizontal scrollbar at 375px. */
+  /* Deliberately restrained. An earlier pass ran this to 7.5rem and the hero URL wrapped onto four
+     lines, splitting `example.` / `com.` across a line break — which broke the very device the
+     headline exists to show, and pushed the pitch and the CTA below the fold. The URL is still the
+     largest thing on the page; it no longer is the only thing. */
+  /* Lower bound measured, not guessed: `secure-billing.invalid` is 22 monospace characters, and
+     Geist Mono advances ~0.6em, so at a 390px viewport minus gutters (350px) the type must stay
+     at or below ~1.65rem or the hostname pushes the page sideways. */
+  --t-display: clamp(1.55rem, 4.6vw, 4rem);
+  --t-h2: clamp(1.75rem, 4vw, 3.25rem);
+  --t-h3: clamp(1.15rem, 1.8vw, 1.5rem);
+  --t-body: clamp(1rem, 1.05vw, 1.125rem);
+  --t-small: 0.875rem;
+  --t-label: 0.6875rem;
+
+  /* ── Space — marketing page, so generous (density dial 4/10) ── */
+  --s-1: 0.5rem;
+  --s-2: 0.75rem;
+  --s-3: 1rem;
+  --s-4: 1.5rem;
+  --s-5: 2rem;
+  --s-6: 3rem;
+  --s-7: 4.5rem;
+  --s-8: 7rem;
+  --s-9: 10rem;
+
+  --rail: 4.5rem;
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --measure: 62ch;
+
+  /* ── Motion — exits faster than enters, nothing overshoots ──── */
+  --e-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --e-in: cubic-bezier(0.4, 0, 1, 1);
+  --d-fast: 140ms;
+  --d-base: 260ms;
+  --d-slow: 620ms;
+}
+
+/* The page is dark by design — it is a demo surface for a badge that must work on dark sites.
+   `color-scheme` keeps form controls and scrollbars consistent with that. */
+:root {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--ink-base);
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis-weight: none;
+  /* The hero animation translates elements in from off-screen; without this the page can be
+     dragged sideways on touch before GSAP settles. */
+  overflow-x: hidden;
+}
+
+/* Visible, high-contrast focus. Never removed — it is listed as an anti-pattern in the very
+   database that proposed an invisible one. */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, var(--paper) 35%, transparent);
+  text-underline-offset: 0.25em;
+}
+
+img,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: var(--safe);
+  color: var(--ink-void);
+}

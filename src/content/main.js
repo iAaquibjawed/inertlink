@@ -1,12 +1,9 @@
 /**
- * Content script entrypoint. Bundled to `dist/content/content.js` as a classic IIFE.
+ * Content script entrypoint, bundled to `dist/content/content.js` as a classic IIFE.
  *
- * Why an entrypoint at all, when hover.js has `start()`: content scripts cannot be ES modules.
- * Neither a static `content_scripts` entry nor `chrome.scripting.registerContentScripts` supports
- * `import`, so the engine + badge + hover graph has to arrive as one classic script (ADR-0007).
- *
- * This file stays tiny on purpose. Everything it touches is in src/ as readable modules; the
- * bundler only concatenates, and the output is unminified so it can be diffed against the source.
+ * Content scripts cannot be ES modules — neither a static `content_scripts` entry nor
+ * `chrome.scripting.registerContentScripts` supports `import` — so the whole graph must arrive as
+ * one classic script (ADR-0007). Output is left unminified so it can be diffed against src/.
  */
 
 import { start } from './hover.js';
@@ -15,12 +12,9 @@ import { start } from './hover.js';
 // bfcache restore can run us twice. A second listener set would double every hover.
 if (!window.__inertlinkActive) {
   window.__inertlinkActive = true;
-  // One line, once per page. "Is it even running here?" is the first question every support
-  // conversation starts with, and there is no other way for a user to answer it — the badge only
-  // appears on hover, so silence is indistinguishable from a broken install.
+  // The badge only appears on hover, so without this there is no way to tell "running" from
+  // "broken install".
   console.info('[inertlink] active on', location.host);
-  start().catch(() => {
-    // Fail safe, fail quiet (golden rule 6). A content script that cannot start must leave the
-    // page exactly as it found it, with no error in the console the user did not cause.
-  });
+  // Fail quiet (golden rule 6): a content script that cannot start leaves the page as it found it.
+  start().catch(() => {});
 }
