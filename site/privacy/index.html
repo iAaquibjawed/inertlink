@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy — InertLink</title>
+    <meta
+      name="description"
+      content="What InertLink does with your data. By default: nothing leaves your device."
+    />
+    <meta name="theme-color" content="#0b0b0d" />
+    <link rel="stylesheet" href="../main.css" />
+    <link rel="stylesheet" href="../styles/tokens.css" />
+    <link rel="stylesheet" href="../styles/site.css" />
+    <link rel="stylesheet" href="../styles/prose.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" />
+    <link rel="apple-touch-icon" href="../mark-180.png" />
+  </head>
+  <body>
+    <main class="prose-page">
+      <a class="prose-back" href="../">← InertLink</a>
+
+      <article class="prose">
+        <h1>Privacy policy</h1>
+        <p class="updated">Last updated 20 September 2026</p>
+
+        <p class="lede">
+          InertLink tells you whether a link is safe before you click it. This policy says exactly
+          what it does with data. It is short because the extension does very little.
+        </p>
+
+        <div class="callout callout--safe">
+          <p>
+            <strong>By default, nothing leaves your device.</strong> On a fresh install InertLink
+            makes no network requests at all — not on install, not when you hover a link, not on a
+            schedule. Every check runs against data bundled inside the extension.
+          </p>
+        </div>
+
+        <h2>Hovering never contacts the link</h2>
+        <p>
+          InertLink reads the address as text. It does not follow it, resolve it, prefetch it, or
+          expand shortened links. Doing so would send a request to that site from your computer,
+          triggered by a mouse movement you never meant as a click — which is precisely the thing a
+          link-safety tool should not do.
+        </p>
+
+        <h2>What is stored, and where</h2>
+        <p>
+          All storage is local to your browser. There is no InertLink server and no account.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Where</th>
+              <th>Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Your settings — sensitivity, allow and block lists, paused sites, optional API key</td>
+              <td><code>chrome.storage.sync</code></td>
+              <td>So your preferences follow your Chrome profile</td>
+            </tr>
+            <tr>
+              <td>Cached verdicts, keyed by <strong>hostname only</strong></td>
+              <td><code>chrome.storage.local</code></td>
+              <td>So the same site is never looked up twice</td>
+            </tr>
+            <tr>
+              <td>A count of links seen on the current tab</td>
+              <td>That tab's memory</td>
+              <td>Shown in the popup; never written to disk, gone when the tab closes</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          No browsing history is recorded. No list of the links you hovered is kept anywhere.
+        </p>
+
+        <h2>What is sent, only if you turn it on</h2>
+        <p>
+          Online reputation checking is <strong>off by default</strong>. If you switch it on and
+          supply your own API key:
+        </p>
+        <ul>
+          <li>
+            Only the <strong>hostname</strong> is sent — for example <code>example.com</code>.
+            Never the path, never the query string. Those carry session tokens, password-reset
+            links and search terms, and none of that reaches a third party.
+          </li>
+          <li>
+            It is sent <strong>only</strong> when the local checks are inconclusive. A link that is
+            clearly fine, or clearly bad, is never sent.
+          </li>
+          <li>A hostname on your allowlist is <strong>never</strong> sent.</li>
+          <li>Results are cached, so a hostname is not sent twice.</li>
+          <li>
+            The request is made by the extension's background worker, not by the page you are
+            viewing, and carries no cookies or credentials.
+          </li>
+        </ul>
+        <p>
+          The provider is one you choose and authenticate to with your own key. Your use of that
+          provider is governed by their privacy policy — for Google Safe Browsing, Google's.
+        </p>
+        <p>
+          If you also configure an optional blocklist feed URL, the extension fetches that list
+          weekly over HTTPS. It sends no information about you when doing so.
+        </p>
+
+        <h2>Site access</h2>
+        <p>InertLink requests no site access when you install it. It runs on a page only when you:</p>
+        <ul>
+          <li>click its toolbar icon — which covers that tab for that visit; or</li>
+          <li>grant it a specific site; or</li>
+          <li>choose to let it run on every site.</li>
+        </ul>
+        <p>
+          You can withdraw any of these at any time from the popup, the options page, or
+          <code>chrome://extensions</code>.
+        </p>
+
+        <h2>What is never done</h2>
+        <ul>
+          <li>No data is sold or shared with third parties.</li>
+          <li>No advertising, analytics, or tracking of any kind is included.</li>
+          <li>
+            No data is used for anything other than telling you whether a link is safe.
+          </li>
+          <li>
+            No remote code is loaded or executed. Everything that runs ships inside the extension.
+          </li>
+        </ul>
+
+        <h2>This website</h2>
+        <p>
+          This page and the rest of inertlink.aaquibjawed.com are static files. There are no
+          cookies, no analytics, no tracking pixels, and no third-party requests — the fonts and
+          animation library are served from this domain rather than a CDN.
+        </p>
+
+        <h2>Removing your data</h2>
+        <p>
+          Uninstalling the extension removes everything it stored. You can also clear cached
+          verdicts at any time from the options page, and remove individual sites from your lists
+          there.
+        </p>
+
+        <h2>Verifying any of this</h2>
+        <p>
+          InertLink is open source. Every claim above can be checked against the code at
+          <a href="https://github.com/iAaquibjawed/inertlink" target="_blank" rel="noopener noreferrer"
+            >github.com/iAaquibjawed/inertlink</a
+          >, which is the point of publishing it.
+        </p>
+
+        <h2>Changes</h2>
+        <p>
+          If this policy changes, the date at the top changes with it and the previous version stays
+          in the repository's history.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          Mohammad Aaquib Jawed —
+          <a id="mailLink" data-u="aaquib" data-d="aaquibjawed.com" href="https://aaquibjawed.com"
+            ><span id="mailText"><noscript>aaquib [at] aaquibjawed [dot] com</noscript></span></a
+          >
+        </p>
+      </article>
+    </main>
+
+    <script type="module" src="../mail.js"></script>
+  </body>
+</html>

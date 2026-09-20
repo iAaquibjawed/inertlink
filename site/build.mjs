@@ -30,8 +30,8 @@ await rm(OUT, { recursive: true, force: true });
 await mkdir(join(OUT, 'styles'), { recursive: true });
 
 const options = {
-  entryPoints: [join(HERE, 'main.js')],
-  outfile: join(OUT, 'main.js'),
+  entryPoints: [join(HERE, 'main.js'), join(HERE, 'mail.js')],
+  outdir: OUT,
   bundle: true,
   format: 'esm',
   target: ['chrome120', 'firefox121', 'safari17'],
@@ -46,11 +46,15 @@ const options = {
   sourcemap: watch,
   logLevel: 'info',
   plugins: [stripJsonComments],
+  // main.js emits main.css from its font imports; the legal pages link that same file.
+  entryNames: '[name]',
 };
 
 /** Files the HTML references directly, so they must land in dist/ alongside it. */
 const STATIC_FILES = [
   'index.html',
+  'privacy/index.html',
+  'terms/index.html',
   'favicon-32.png',
   'mark-180.png',
   'mark-512.png',
@@ -61,7 +65,8 @@ const STATIC_FILES = [
 
 async function copyStatic() {
   for (const f of STATIC_FILES) {
-    if (f === 'index.html') {
+    if (f.endsWith('.html')) {
+      await mkdir(dirname(join(OUT, f)), { recursive: true });
       await writeFile(join(OUT, f), stripHtmlComments(await readFile(join(HERE, f), 'utf8')));
       continue;
     }
@@ -123,19 +128,31 @@ if (serve) {
   };
   createServer(async (req, res) => {
     const raw = decodeURIComponent((req.url ?? '/').split('?')[0]);
-    const rel = raw === '/' ? '/index.html' : raw;
-    const file = join(OUT, normalize(rel).replace(/^(\.\.[/\\])+/, ''));
-    if (!file.startsWith(OUT)) {
+    const safe = normalize(raw).replace(/^(\.\.[/\\])+/, '');
+    const base = join(OUT, safe);
+    if (!base.startsWith(OUT)) {
       res.writeHead(403).end('Forbidden');
       return;
     }
-    try {
-      const body = await readFile(file);
-      res.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' });
-      res.end(body);
-    } catch {
-      res.writeHead(404).end('Not found');
+
+    // Static hosts resolve a directory path to its index.html. The dev server has to do the same
+    // or /privacy/ works in production and 404s locally — which is the wrong way round for a
+    // server whose only job is to tell you what production will look like.
+    const candidates = extname(base)
+      ? [base]
+      : [join(base, 'index.html'), `${base}.html`];
+
+    for (const file of candidates) {
+      try {
+        const body = await readFile(file);
+        res.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' });
+        res.end(body);
+        return;
+      } catch {
+        /* try the next candidate */
+      }
     }
+    res.writeHead(404).end('Not found');
   }).listen(PORT, () => console.log(`[site] http://localhost:${PORT}`));
 }
 

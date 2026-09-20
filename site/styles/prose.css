@@ -1,0 +1,160 @@
+/**
+ * Long-form pages (privacy, terms).
+ *
+ * These are read, not scanned, so the type is set for reading: a narrow measure, generous leading,
+ * and no motion. Someone opening the privacy policy wants an answer, not a performance.
+ */
+
+.prose-page {
+  max-width: 1240px;
+  margin-inline: auto;
+  padding: calc(var(--s-8) + 2rem) var(--gutter) var(--s-8);
+}
+
+.prose-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--paper-dim);
+  text-decoration: none;
+  margin-bottom: var(--s-6);
+}
+.prose-back:hover {
+  color: var(--paper);
+}
+
+.prose {
+  max-width: 68ch;
+}
+
+.prose h1 {
+  font-size: var(--t-h2);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  margin: 0 0 var(--s-2);
+}
+
+.prose .updated {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+  margin: 0 0 var(--s-6);
+}
+
+.prose .lede {
+  font-size: 1.125rem;
+  color: var(--paper-dim);
+  margin: 0 0 var(--s-6);
+}
+
+.prose h2 {
+  font-size: var(--t-h3);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  margin: var(--s-7) 0 var(--s-3);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--ink-line);
+}
+
+.prose h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: var(--s-5) 0 var(--s-2);
+}
+
+.prose p,
+.prose li {
+  color: var(--paper-dim);
+  line-height: 1.7;
+}
+.prose p {
+  margin: 0 0 var(--s-3);
+}
+
+.prose strong {
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.prose ul {
+  margin: 0 0 var(--s-4);
+  padding-left: 1.1rem;
+}
+.prose li {
+  margin-bottom: var(--s-2);
+}
+.prose li::marker {
+  color: var(--paper-faint);
+}
+
+.prose a {
+  color: var(--safe);
+  text-decoration-color: color-mix(in srgb, var(--safe) 45%, transparent);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 var(--s-5);
+  font-size: var(--t-small);
+}
+.prose th,
+.prose td {
+  text-align: left;
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 1px solid var(--ink-line);
+  vertical-align: top;
+}
+.prose th {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+  font-weight: 500;
+}
+.prose td {
+  color: var(--paper-dim);
+}
+
+/* The one claim on each page worth emphasising.
+   Weight is carried by a tinted surface, not by an accent stroke down one edge — the same rule the
+   badge follows (MASTER.md §4.1). A coloured bar next to a coloured background states the same
+   thing twice, and reads as decoration rather than meaning. */
+.prose .callout {
+  border: 1px solid var(--ink-line-strong);
+  border-radius: 10px;
+  padding: var(--s-4) var(--s-5);
+  margin: 0 0 var(--s-5);
+  background: var(--ink-raised);
+}
+.prose .callout p:last-child {
+  margin-bottom: 0;
+}
+.prose .callout--warn {
+  background: color-mix(in srgb, var(--caution) 7%, var(--ink-base));
+  border-color: color-mix(in srgb, var(--caution) 26%, var(--ink-line));
+}
+.prose .callout--safe {
+  background: color-mix(in srgb, var(--safe) 6%, var(--ink-base));
+  border-color: color-mix(in srgb, var(--safe) 24%, var(--ink-line));
+}
+
+.prose code {
+  font-size: 0.9em;
+}
+
+@media (max-width: 560px) {
+  .prose-page {
+    padding-inline: var(--s-3);
+  }
+  .prose table {
+    display: block;
+    overflow-x: auto;
+  }
+}

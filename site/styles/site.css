@@ -1162,3 +1162,20 @@ code {
     display: none;
   }
 }
+
+.foot__links {
+  display: flex;
+  gap: var(--s-4);
+  margin-top: var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+}
+.foot__links a {
+  color: var(--paper-dim);
+  text-decoration: none;
+}
+.foot__links a:hover {
+  color: var(--paper);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
