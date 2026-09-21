@@ -1222,6 +1222,22 @@ code {
   font-style: normal;
   color: var(--paper);
 }
+/* The click-first rule is the single most confusing thing about the product on first run, so it
+   gets a raised surface rather than a footnote — weight carried by the surface, never a stripe. */
+.use__why {
+  margin: var(--s-5) 0 0;
+  padding: var(--s-4);
+  border: 1px solid var(--ink-line);
+  border-radius: 12px;
+  background: var(--ink-raised);
+  font-size: var(--t-small);
+  color: var(--paper-dim);
+  max-width: var(--measure);
+}
+.use__why strong {
+  color: var(--paper);
+  font-weight: 600;
+}
 .use__note {
   margin: var(--s-5) 0 0;
   font-size: var(--t-small);
