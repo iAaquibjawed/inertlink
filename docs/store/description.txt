@@ -1,0 +1,62 @@
+See where a link really goes — before you click it.
+
+InertLink puts a small badge next to your cursor when you rest on a link. It names the site that
+actually owns that link, so a lookalike address has nowhere to hide.
+
+You read a URL left to right. Your browser obeys the end of it. That gap is how phishing works:
+"example.com.secure-billing.invalid" is not example.com, and "example.com@evil-site.invalid" never
+goes to example.com at all. InertLink shows you the difference in the quarter-second before you
+decide to click.
+
+HOW TO USE IT
+
+1. Open any web page.
+2. Click the InertLink icon in your toolbar.
+3. Hover a link and pause for a moment. The badge appears next to your cursor.
+
+That's it — there is no setup and no account. Clicking the icon switches it on for that tab, with
+no permission prompt. If you would rather not click each time, the popup has a "run on every site"
+option, and it is entirely up to you.
+
+WHAT IT CATCHES
+
+• Lookalike domains — paypa1.com, exarnple.com, and other one-character swaps
+• The @ trick — everything before an @ is discarded by your browser
+• Brand names used as a prefix — example.com.secure-billing.invalid
+• Link text that names one site while the link points at another
+• Letters from other alphabets chosen because they look like English ones
+• Bare IP addresses instead of real domain names
+• Shortened links that hide their destination
+• Unencrypted sign-in pages, odd ports, heavy encoding, and more
+
+Fourteen independent checks, each contributing to a score. No single rule decides the answer,
+which keeps one over-eager heuristic from painting the whole web red.
+
+IT DOESN'T PHONE HOME
+
+A fresh install makes no network requests at all. Every check runs against data bundled inside the
+extension.
+
+Hovering a link never contacts that link. InertLink reads the address as text — it never follows
+it, and never expands shortened links, because that would send a request to the site from your
+computer that you never asked for.
+
+An optional second opinion exists for links the local checks can't settle. It is off by default,
+needs your own API key, and sends only the hostname — never the path, never the query string.
+
+IT RUNS WHERE YOU ALLOW IT
+
+No site access is requested when you install it. Click the toolbar icon and it works on that tab
+for that visit. Grant a single site, or every site, only if you want it always on. You can
+withdraw any of it at any time.
+
+OPEN SOURCE
+
+"Zero network by default" is a claim, and the only way to check a claim is to read the code.
+Source, security review and privacy policy: https://inertlink.aaquibjawed.com
+
+NOT A GUARANTEE
+
+InertLink scores a link from its address. A well-built phishing site on a fresh domain can score
+clean, and a legitimate site can occasionally be flagged. Treat a verdict as one more piece of
+evidence — not as permission to stop thinking.

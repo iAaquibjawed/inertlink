@@ -246,6 +246,32 @@ check(voidShown === true, 'javascript:void(0) is an InertLink too — never Dang
 const jsCode = await hoverSelector(`a[href^="javascript:fetch"]`);
 check(jsCode === 'caution', `javascript: with a real body → ${jsCode ?? 'nothing'} (expected caution)`);
 
+/* ── the badge must actually RENDER, not merely mount ───────────────────────────────────────── */
+
+console.log('\nbadge renders');
+// Structural checks are not enough here: mount() creates the host and puts it in the top layer
+// BEFORE showBadge does any work, so a throw halfway through leaves every structural assertion
+// true while the user sees nothing. The content script records the throw instead.
+const painted = await evalIn(
+  page,
+  `const a = [...document.querySelectorAll('a')].find(x => x.getAttribute('href') === 'https://exarnple.com/');
+   a.scrollIntoView({ block: 'center' });
+   await new Promise(r => setTimeout(r, 100));
+   const rect = a.getBoundingClientRect();
+   const o = { bubbles: true, cancelable: true, clientX: Math.round(rect.left + 4), clientY: Math.round(rect.top + 4), view: window };
+   a.dispatchEvent(new MouseEvent('mouseover', o));
+   document.dispatchEvent(new MouseEvent('mousemove', o));
+   await new Promise(r => setTimeout(r, 600));
+   const host = document.getElementById('inertlink-badge-root');
+   return { open: !!host && host.matches(':popover-open') };`
+);
+const state = await evalIn(sw, `return await chrome.tabs.sendMessage(${tabId}, { type: 'GET_TAB_STATE' })`);
+check(painted.open === true, 'badge enters the top layer on hover');
+check(
+  state.paintError === null || state.paintError === undefined,
+  `badge painted without throwing${state.paintError ? ` — ${state.paintError}` : ''}`
+);
+
 /* ── the badge must outrank ordinary page chrome (ADR-0013) ─────────────────────────────────── */
 
 console.log('\nstacking: badge vs a z-index:100 sticky nav');

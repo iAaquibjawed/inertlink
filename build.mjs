@@ -81,7 +81,10 @@ async function copyStatic() {
     await mkdir(dirname(join(DIST, to)), { recursive: true });
     await cp(join(SRC, from), join(DIST, to));
   }
-  await cp(join(ROOT, 'assets'), join(DIST, 'assets'), { recursive: true });
+  // Only the icons. `assets/brand/` holds the full-resolution lockups used by the README, the
+  // landing page and the store listing — ~950kb that the extension never loads, and that would
+  // otherwise be downloaded by every user and re-reviewed on every submission.
+  await cp(join(ROOT, 'assets/icons'), join(DIST, 'assets/icons'), { recursive: true });
   // The manifest lives in src/, NOT the repo root. A root manifest.json is loadable by
   // "Load unpacked" — Chrome accepts it, then every path inside it 404s, and the result is an
   // extension that installs cleanly and does absolutely nothing. Keeping it out of the root makes
@@ -203,3 +206,31 @@ if (watch) {
   );
   console.log('[inertlink] build complete → dist/');
 }
+
+/**
+ * Nothing ships that nothing references.
+ *
+ * Checked against the manifest, the popup CSS and the built bundles rather than a hardcoded list,
+ * so adding an icon somewhere new does not silently trip it.
+ */
+async function verifyNoUnusedAssets() {
+  const files = (await walk(DIST)).filter((f) => /\.(png|jpg|svg|woff2?)$/.test(f));
+  const haystack = (
+    await Promise.all(
+      (await walk(DIST))
+        .filter((f) => /\.(json|html|css|js)$/.test(f))
+        .map((f) => readFile(f, 'utf8'))
+    )
+  ).join('\n');
+
+  const unused = files
+    .map((f) => f.slice(DIST.length + 1))
+    .filter((rel) => !haystack.includes(rel.split('/').pop()));
+
+  if (unused.length) {
+    throw new Error(`unreferenced files in dist/: ${unused.join(', ')}`);
+  }
+  console.log(`[inertlink] assets: ${files.length} shipped, all referenced`);
+}
+
+await verifyNoUnusedAssets();

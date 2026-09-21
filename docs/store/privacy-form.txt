@@ -1,0 +1,92 @@
+════ SINGLE PURPOSE DESCRIPTION ════
+
+InertLink shows a safety verdict for a link before you click it.
+
+When you rest the cursor on a link, the extension reads that link's address as text and scores it
+with local heuristics, then shows a small badge next to the cursor naming the registrable domain
+the link really points to. This helps a user notice lookalike and deceptive addresses — such as
+"example.com.secure-billing.invalid" or "example.com@attacker.invalid" — before clicking them.
+
+That is the extension's only function. It does not block, redirect, rewrite, or modify any page,
+and it does not add any feature unrelated to judging where a link goes.
+
+
+════ storage JUSTIFICATION ════
+
+Stores the user's own settings and a local cache of results.
+
+chrome.storage.sync holds settings the user controls: sensitivity level, their personal allow and
+block lists, sites they have paused, and (only if they choose to enable optional online checks)
+their own API key.
+
+chrome.storage.local holds a cache of verdicts keyed by hostname only, so the same hostname is
+never looked up twice, and the optional downloaded blocklist.
+
+Without storage, no preference would survive a browser restart and every hostname would have to be
+re-checked, which would increase the number of optional lookups rather than reduce it.
+
+
+════ scripting JUSTIFICATION ════
+
+Used to put the hover badge on the pages the user has allowed.
+
+The extension deliberately declares no static content_scripts. Instead it calls
+chrome.scripting.registerContentScripts() to register the hover script for exactly the origins the
+user has granted, and chrome.scripting.executeScript() to inject into the current tab when the user
+clicks the toolbar icon.
+
+This is what makes the extension run on zero pages until the user asks for it, rather than
+requesting broad access at install time. Without "scripting" the extension cannot display a badge
+on any page at all.
+
+
+════ alarms JUSTIFICATION ════
+
+Schedules the optional weekly refresh of the bundled blocklist.
+
+A Manifest V3 service worker is terminated when idle, so setTimeout/setInterval cannot survive long
+enough to schedule a weekly task. chrome.alarms is the only supported mechanism.
+
+This alarm does nothing unless the user has both enabled optional online checks and supplied a
+blocklist feed URL. On a default install it never performs any network request.
+
+
+════ activeTab JUSTIFICATION ════
+
+Lets the extension work on the current tab when the user clicks the toolbar icon.
+
+Clicking the icon is the primary way the extension is used. activeTab grants temporary access to
+only that one tab, only after that explicit user action, and it expires on navigation.
+
+This is deliberately narrower than requesting host permissions at install. It allows the extension
+to work immediately on the page the user is looking at without any permission prompt, and without
+requesting access to every site. The broad host patterns remain optional and are only requested if
+the user chooses to have it run automatically.
+
+
+════ REMOTE CODE ════
+
+Select: "No, I am not using Remote code"
+
+
+════ DATA USAGE — CHECKBOXES ════
+
+Tick ONLY:
+  [x] Web history
+
+Leave every other box unticked:
+  [ ] Personally identifiable information
+  [ ] Health information
+  [ ] Financial and payment information
+  [ ] Authentication information
+  [ ] Personal communications
+  [ ] Location
+  [ ] User activity
+  [ ] Website content
+
+Then certify all three statements at the bottom (all three are true).
+
+
+════ PRIVACY POLICY URL ════
+
+https://inertlink.aaquibjawed.com/privacy/

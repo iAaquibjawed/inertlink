@@ -31,6 +31,16 @@ let remoteBlocklist = [];
 /** Session tally, in memory only. Dies with the tab — this is not browsing history. */
 const counts = { safe: 0, caution: 0, danger: 0, unknown: 0 };
 
+/**
+ * The last error thrown while painting, if any.
+ *
+ * A throw inside the badge is the one failure that is completely invisible from the outside: the
+ * host element is already mounted and already in the top layer by then, so every structural check
+ * still passes while the user sees nothing at all. Recording it makes that failure observable to
+ * the test suite, which previously reported 30/30 green on a badge that never rendered.
+ */
+let paintError = null;
+
 const memo = new Map();
 let dwellTimer = null;
 let rafId = null;
@@ -49,7 +59,7 @@ const isPaused = () =>
  * An `<a href>` is not the only way a click navigates. A form submit control leaves the page
  * exactly like a link does, and phishing kits POST credentials to attacker endpoints through
  * that mechanism — so its destination is in scope. (Distinct from the credential-field warning
- * parked in CLAUDE.md §7, which is about flagging input fields.)
+ * parked in docs/ENGINEERING.md §7, which is about flagging input fields.)
  *
  * Reading `action` / `formaction` is string inspection: nothing is submitted, nothing is fetched
  * (golden rule 3).
@@ -126,6 +136,16 @@ function remember(key, value) {
 }
 
 function paint(result, { pending = false } = {}) {
+  try {
+    paintBadge(result, pending);
+    paintError = null;
+  } catch (err) {
+    // Fail quiet on the page (golden rule 6), but do not fail *silently* to ourselves.
+    paintError = String(err && err.message ? err.message : err);
+  }
+}
+
+function paintBadge(result, pending) {
   showBadge({
     verdict: pending ? VERDICT.CHECKING : result.verdict,
     host: truncateHost(result.parsed?.host ?? '', 34),
@@ -243,7 +263,11 @@ function onMouseOver(event) {
   // The dwell is the privacy feature as much as the performance one: a cursor crossing a page
   // full of links must not evaluate — let alone look up — every one it passes over.
   dwellTimer = setTimeout(() => {
-    if (activeAnchor === target.el) resolve(target);
+    try {
+      if (activeAnchor === target.el) resolve(target);
+    } catch (err) {
+      paintError = String(err && err.message ? err.message : err);
+    }
   }, DWELL_MS);
 }
 
@@ -315,6 +339,7 @@ function onRuntimeMessage(message, sender, sendResponse) {
     paused: isPaused(),
     host: location.hostname,
     counts: { ...counts },
+    paintError,
   });
   return undefined;
 }

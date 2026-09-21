@@ -1179,3 +1179,52 @@ code {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ── How to use ────────────────────────────────────────────────────────────────────────── */
+.use__sub {
+  margin: var(--s-7) 0 var(--s-4);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.use__levels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: var(--s-3);
+}
+.use__level {
+  padding: var(--s-4);
+  border: 1px solid var(--ink-line);
+  border-radius: 12px;
+  background: var(--ink-raised);
+}
+.use__tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--safe);
+  margin-bottom: var(--s-2);
+}
+.use__level h4 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.use__level p {
+  margin: 0;
+  font-size: var(--t-small);
+  color: var(--paper-dim);
+}
+.use__level em {
+  font-style: normal;
+  color: var(--paper);
+}
+.use__note {
+  margin: var(--s-5) 0 0;
+  font-size: var(--t-small);
+  color: var(--paper-faint);
+  max-width: var(--measure);
+}

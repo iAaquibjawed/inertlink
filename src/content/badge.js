@@ -339,12 +339,13 @@ export function showBadge({
 
   const wasVisible = s.el.dataset.visible === 'true';
 
-  s.el.dataset.verdict = kind;
   // `GLYPHS[verdict]` is a plain-object lookup, so a verdict of "constructor" or "__proto__"
   // would resolve up the prototype chain and stringify a function into innerHTML. Verdicts come
   // from our own enum today, but the value travels through a message from the worker, and an
   // index into an object is not a place to rely on that.
   const kind = Object.hasOwn(GLYPHS, verdict) ? verdict : 'unknown';
+
+  s.el.dataset.verdict = kind;
   s.nodes.icon.innerHTML = `<svg viewBox="0 0 24 24">${GLYPHS[kind]}</svg>`;
   s.nodes.verdict.textContent = LABELS[kind];
 
