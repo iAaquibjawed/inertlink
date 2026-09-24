@@ -316,6 +316,26 @@
       "expect": "unknown",
       "signals": [],
       "note": "The other common InertLink form."
+    },
+    {
+      "url": "https://nam04.safelinks.protection.outlook.com/?url=https%3A%2F%2Fexample.com%2Fproject&data=05%7Ctest",
+      "expect": "safe",
+      "signals": [],
+      "note": "Outlook SafeLinks wrapping a safe destination: unwrapped to example.com so gateway encoding does not misfire."
+    },
+    {
+      "url": "https://nam04.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpaypa1.com%2Flogin&data=05%7Ctest",
+      "expect": "danger",
+      "signals": [
+        "typosquat"
+      ],
+      "note": "Phishing destination inside Outlook SafeLinks: unwrapped and correctly flagged as typosquat."
+    },
+    {
+      "url": "https://urldefense.com/v3/__https://example.com/item__;!!test$",
+      "expect": "safe",
+      "signals": [],
+      "note": "Proofpoint v3 wrapper unwrapped to clean destination."
     }
   ]
 }

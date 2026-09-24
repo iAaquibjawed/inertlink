@@ -13,17 +13,29 @@ import { WEIGHTS } from '../scoring.js';
 
 const CREDENTIAL_PATH = /(login|signin|sign-in|account|verify|secure|auth|password|wallet|bank)/i;
 
-/** RFC 1918 + loopback + link-local. Local network, not the open internet. */
+/** RFC 1918 + RFC 6598 (CGNAT) + loopback + link-local + IPv6 ULA. Local / overlay network, not open internet. */
 function isPrivate(host) {
   if (host === 'localhost' || host.startsWith('127.')) return true;
   if (host.startsWith('10.') || host.startsWith('192.168.')) return true;
   if (host.startsWith('169.254.')) return true;
-  const m = /^172\.(\d{1,3})\./.exec(host);
-  if (m) {
-    const second = Number(m[1]);
+  const m172 = /^172\.(\d{1,3})\./.exec(host);
+  if (m172) {
+    const second = Number(m172[1]);
     return second >= 16 && second <= 31;
   }
-  return host === '[::1]' || host.startsWith('[fe80');
+  // Carrier-Grade NAT (100.64.0.0/10) — used extensively by Tailscale, corporate VPNs, and telco overlays
+  const m100 = /^100\.(\d{1,3})\./.exec(host);
+  if (m100) {
+    const second = Number(m100[1]);
+    return second >= 64 && second <= 127;
+  }
+  const h = host.toLowerCase();
+  return (
+    h === '[::1]' ||
+    h.startsWith('[fe80') ||
+    h.startsWith('[fc') ||
+    h.startsWith('[fd')
+  );
 }
 
 export default {

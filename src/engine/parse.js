@@ -6,10 +6,27 @@
  */
 
 import TLDS from './data/tlds.json';
+import SISTERS from './data/sister-domains.json';
+import { unwrapUrl } from './unwrap.js';
+
+const SISTER_MAP = new Map();
+for (let i = 0; i < (SISTERS.clusters ?? []).length; i++) {
+  const cluster = SISTERS.clusters[i];
+  for (const domain of cluster) {
+    let set = SISTER_MAP.get(domain);
+    if (!set) {
+      set = new Set();
+      SISTER_MAP.set(domain, set);
+    }
+    set.add(i);
+  }
+}
 
 /**
  * @typedef {Object} ParsedUrl
- * @property {string}   raw        Original href.
+ * @property {string}   raw        Parsed target href.
+ * @property {string}   [originalRaw] Raw input href before unwrapping.
+ * @property {{ name: string, host: string }|null} [wrapper] Gateway info if unwrapped.
  * @property {string}   scheme     'https:', 'http:', 'javascript:', …
  * @property {string}   host       Lowercased hostname.
  * @property {string[]} labels     Host split on '.', e.g. ['secure','paypal','com'].
@@ -137,9 +154,14 @@ export function parseUrl(rawUrl, base) {
   // `safe` — and the content script renders it as an explicit InertLink badge instead.
   if (isInertLinkHref(raw)) return null;
 
+  // Unwrap email security wrappers (Outlook SafeLinks, Proofpoint, Google redirect, etc.)
+  // so all checks evaluate the real destination rather than the gateway wrapper.
+  const unwrapped = unwrapUrl(raw);
+  const targetToParse = unwrapped.url;
+
   let url;
   try {
-    url = base ? new URL(raw, base) : new URL(raw);
+    url = base ? new URL(targetToParse, base) : new URL(targetToParse);
   } catch {
     return null;
   }
@@ -151,7 +173,9 @@ export function parseUrl(rawUrl, base) {
   // rather than dropping to `unknown`, which would render as a neutral badge.
   if (DANGEROUS_SCHEMES.has(scheme)) {
     return {
-      raw,
+      raw: targetToParse,
+      originalRaw: raw,
+      wrapper: unwrapped.wrapper,
       scheme,
       host: '',
       labels: [],
@@ -185,7 +209,9 @@ export function parseUrl(rawUrl, base) {
   const userinfo = [url.username, url.password].filter(Boolean).join(':');
 
   return {
-    raw,
+    raw: targetToParse,
+    originalRaw: raw,
+    wrapper: unwrapped.wrapper,
     scheme,
     host,
     labels,
@@ -257,3 +283,26 @@ export function editDistance(a, b, max = 3) {
   }
   return prev[b.length];
 }
+
+/**
+ * Are these two registrable domains owned by the same organization?
+ * Prevents false positives between rebrands (twitter.com <-> x.com),
+ * cloud platforms (atlassian.com <-> atlassian.net), and sister properties
+ * (outlook.com <-> office.com <-> microsoft.com).
+ *
+ * @param {string} a
+ * @param {string} b
+ */
+export function areSisterDomains(a, b) {
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const setA = SISTER_MAP.get(a.toLowerCase());
+  const setB = SISTER_MAP.get(b.toLowerCase());
+  if (!setA || !setB) return false;
+  for (const id of setA) {
+    if (setB.has(id)) return true;
+  }
+  return false;
+}
+
+export { unwrapUrl };

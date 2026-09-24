@@ -13,7 +13,7 @@
  */
 
 import { WEIGHTS } from '../scoring.js';
-import { truncateHost } from '../parse.js';
+import { truncateHost, areSisterDomains } from '../parse.js';
 import BRANDS from '../data/top-brands.json';
 
 export default {
@@ -30,8 +30,11 @@ export default {
     if (subdomain.length === 0) return base;
 
     for (const brand of BRANDS.brands) {
-      // The real thing — `paypal.com` under `paypal.com` is not deception.
-      if (parsed.registrable === brand.domain) return base;
+      // The real thing — `paypal.com` under `paypal.com` or regional ccTLD (`paypal.co.uk`) is not deception.
+      if (parsed.registrable === brand.domain || parsed.registrableLabel === brand.label) continue;
+
+      // Sister domains of the same entity (e.g. `outlook.office.com`, `jira.atlassian.net`, `github.github.io`)
+      if (areSisterDomains(brand.domain, parsed.registrable)) continue;
 
       const brandLabel = brand.label;
       const brandTld = brand.domain.slice(brandLabel.length + 1);

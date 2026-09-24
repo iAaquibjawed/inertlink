@@ -87,6 +87,22 @@
       </li>
     </ul>
 
+    <h2>Email Security Wrappers (Outlook SafeLinks, Proofpoint)</h2>
+    <ul>
+      <li>
+        <a href="https://nam04.safelinks.protection.outlook.com/?url=https%3A%2F%2Fexample.com%2Fproject%2Fdashboard&data=05%7Ctest">Outlook SafeLink &rarr; example.com</a>
+        <small>Should read Safe (owner: example.com, via Outlook SafeLinks) &mdash; unwrapped so gateway encoding does not false-alarm.</small>
+      </li>
+      <li>
+        <a href="https://nam04.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpaypa1.com%2Flogin&data=05%7Ctest">Outlook SafeLink &rarr; paypa1.com</a>
+        <small>Should read Danger (typosquatting paypal.com) &mdash; unwrapped to evaluate the real phishing destination.</small>
+      </li>
+      <li>
+        <a href="https://urldefense.com/v3/__https://example.com/item__;!!test$">Proofpoint v3 &rarr; example.com</a>
+        <small>Should read Safe (owner: example.com, via Proofpoint URL Defense).</small>
+      </li>
+    </ul>
+
     <h2>Should read Caution</h2>
     <ul>
       <li>

@@ -12,7 +12,6 @@
 
 import { WEIGHTS } from '../scoring.js';
 
-/** Two subdomains is ordinary (`static.eu.example.com`). Three starts to be a story. */
 const THRESHOLD = 3;
 
 export default {

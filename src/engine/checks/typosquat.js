@@ -69,8 +69,8 @@ export default {
       for (const brand of BRANDS.brands) {
         if (brand.label.length < MIN_LABEL) continue;
 
-        // Guard 1: the genuine domain is not a typosquat of itself.
-        if (parsed.registrable === brand.domain) return base;
+        // Guard 1: the genuine domain is not a typosquat of itself (including regional ccTLDs).
+        if (parsed.registrable === brand.domain || parsed.registrableLabel === brand.label) return base;
 
         const raw = editDistance(segment, brand.label, 2);
         const homoglyph = editDistance(folded, brand.label, 2);

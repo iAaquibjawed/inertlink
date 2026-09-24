@@ -10,6 +10,9 @@
  *
  * Weight is capped below the caution threshold on its own: a shortener alone should read amber,
  * never red.
+ *
+ * Official branded 1st-party shorteners (youtu.be, amzn.to, wa.me, g.co, apple.co, 1drv.ms, etc.)
+ * are owned by the respective platforms and are safe — they do not trigger Caution.
  */
 
 import { WEIGHTS } from '../scoring.js';
@@ -17,6 +20,7 @@ import { hostMatches } from '../parse.js';
 import SHORTENERS from '../data/shorteners.json';
 
 const HOSTS = SHORTENERS.hosts ?? [];
+const BRANDED = SHORTENERS.branded ?? {};
 
 export default {
   id: 'url-shortener',
@@ -25,6 +29,18 @@ export default {
   run(parsed) {
     const base = { id: 'url-shortener', hit: false, weight: 0, reason: '' };
     if (!parsed.host) return base;
+
+    // Check for official branded 1st-party short link (YouTube, Amazon, Apple, etc.)
+    for (const [host, brandName] of Object.entries(BRANDED)) {
+      if (hostMatches(parsed.host, host)) {
+        return {
+          ...base,
+          hit: true,
+          weight: 0,
+          reason: `Official short link for ${brandName}`,
+        };
+      }
+    }
 
     const match = HOSTS.find((h) => hostMatches(parsed.host, h));
     if (!match) return base;

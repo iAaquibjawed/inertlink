@@ -72,22 +72,37 @@ export function evaluate(rawUrl, context = {}) {
   const verdict = scoreToVerdict(score, signals, context.sensitivity, {
     checksRun: CHECKS.length,
   });
-  return { ...verdict, parsed };
+  return { ...verdict, parsed, wrapper: parsed.wrapper ?? null };
 }
 
 /**
  * The one line the badge shows. Negative-weight signals (the allowlist) explain a *safe* verdict,
- * so they are only surfaced when nothing worse fired.
+ * so they are only surfaced when nothing worse fired. If the link was unwrapped from an email
+ * security gateway, the wrapper is surfaced in the reason.
  *
  * @param {EngineVerdict} verdict
  * @returns {string}
  */
 export function primaryReason(verdict) {
-  const risky = verdict.signals.filter((s) => s.weight > 0);
-  if (risky.length) return risky[0].reason;
-  return verdict.signals[0]?.reason ?? '';
+  const risky = verdict.signals?.filter((s) => s.weight > 0) ?? [];
+  let reason = '';
+  if (risky.length) {
+    reason = risky[0].reason;
+  } else if (verdict.signals?.length) {
+    reason = verdict.signals[0]?.reason ?? '';
+  }
+
+  const wrapper = verdict.parsed?.wrapper ?? verdict.wrapper;
+  if (wrapper) {
+    if (reason) {
+      return `${reason} (via ${wrapper.name})`;
+    }
+    return `via ${wrapper.name}`;
+  }
+
+  return reason;
 }
 
-export { parseUrl, truncateHost, hostMatches } from './parse.js';
+export { parseUrl, truncateHost, hostMatches, unwrapUrl } from './parse.js';
 export { CHECKS } from './checks/registry.js';
 export { THRESHOLDS, WEIGHTS } from './scoring.js';

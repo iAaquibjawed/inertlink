@@ -489,3 +489,34 @@ claims to be a link, we answer. A plain `<button>` makes no such claim and still
   user cannot act on is a warning they learn to dismiss.
 - Fixtures gained the InertLink, `javascript:`-with-body, and `blob:` cases; `npm run e2e` asserts the
   badge appears for InertLinks and that `javascript:` with a body reads caution.
+
+---
+
+## ADR-0017 — Email security wrappers (Outlook SafeLinks, Proofpoint) are unwrapped to check the real destination
+
+**Date:** 2026-09-24 · **Phase:** 5 · **Status:** accepted
+
+**Chose:** recognize email protection gateways (Microsoft Defender / Outlook Safe Links, Proofpoint URL Defense, Google redirect, Slack, Facebook, LinkedIn) and statically unwrap the target destination during `parseUrl()`. Evaluate all 14 detection checks against the extracted target destination, while noting the wrapper in the badge reason.
+**Over:** evaluating the gateway hostname itself, or blanket-allowlisting gateway domains like `safelinks.protection.outlook.com`.
+
+**Why:** found on production enterprise emails in Microsoft 365 / Outlook. In corporate environments, Microsoft Safe Links wraps every single inbound link:
+`https://*.safelinks.protection.outlook.com/?url=https%3A%2F%2Fnorstella.atlassian.net...`
+Evaluating the wrapper hostname caused two fatal failure modes:
+1. **100% false-positive rate on legitimate work links.** The Safe Links URL contains heavy percent-encoding, 3+ subdomains, and embedded query URLs. This tripped `encoded-obfuscation` (+50 weight) and `excessive-subdomains` (+7.5 weight), plus `text-href-mismatch` (+40 weight) when the anchor text named the real service (e.g. "norstella.atlassian.net"). The extension marked legitimate Atlassian Jira, GitHub, and internal links as red **Danger** with "Hidden content — it carries a second web address that it will forward you to". A security tool that shouts danger on every work email gets disabled.
+2. **Blind spot to real phishing.** If we had simply allowlisted `outlook.com`, an attacker sending an actual credential harvesting link (`paypa1.com`) through an Office 365 inbox would be badged as green **Safe — outlook.com**, directly leading the user into a phishing trap!
+
+**The solution:** unwrap the gateway URL offline (zero network). The true destination is evaluated:
+- A clean destination (e.g. `norstella.atlassian.net`) evaluates as **Safe**, with the badge noting `via Outlook SafeLinks`.
+- A malicious destination (e.g. `paypa1.com/login`) evaluates as **Danger**, revealing the attacker's domain: `Looks like paypal.com, but with 1 edit (via Outlook SafeLinks)`.
+- Text matching (`text-href-mismatch`) compares against the genuine destination, avoiding false mismatches.
+
+**Why arbitrary open redirects are NOT unwrapped:**
+Only recognized, reputable security gateways with strict host patterns (`*.safelinks.protection.outlook.com`, `urldefense.proofpoint.com`, etc.) are unwrapped. Generic or arbitrary open redirects (e.g. `example.com/redirect?url=https://evil.ru`) on unknown domains are NOT unwrapped, preserving the `encoded-obfuscation` warning so attackers cannot bypass detection by pointing open redirects at arbitrary hosts.
+
+**Consequences:**
+- `src/engine/unwrap.js` provides pure, testable unwrapping with support for nested wrappers up to depth 3.
+- `parseUrl()` attaches `wrapper: { name, host }` and `originalRaw`.
+- `primaryReason()` reflects `(via <WrapperName>)`.
+- Added `outlook.com`, `office365.com`, and `atlassian.net` to `known-safe.json`.
+- Tested in `tests/unwrap.test.js`, with fixtures in `tests/fixtures/urls.json` and `tests/manual/phishing-sandbox.html`.
+
