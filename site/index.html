@@ -30,6 +30,31 @@
   <body>
     <a class="skip" href="#main">Skip to content</a>
 
+    <!-- Google's official Chrome mark, inlined once and referenced by <use> from every
+         "Add to Chrome" button. Inlined rather than linked so golden rule 1 (no remote refs)
+         still holds; defined once so the three gradient ids can't collide. -->
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <symbol id="chrome-logo" viewBox="0 0 48 48">
+        <linearGradient id="chrome-red" x1="3.2173" y1="15" x2="44.7812" y2="15" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#d93025" />
+          <stop offset="1" stop-color="#ea4335" />
+        </linearGradient>
+        <linearGradient id="chrome-yellow" x1="20.7219" y1="47.6791" x2="41.5039" y2="11.6837" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#fcc934" />
+          <stop offset="1" stop-color="#fbbc04" />
+        </linearGradient>
+        <linearGradient id="chrome-green" x1="26.5981" y1="46.5015" x2="5.8161" y2="10.506" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#1e8e3e" />
+          <stop offset="1" stop-color="#34a853" />
+        </linearGradient>
+        <circle cx="24" cy="23.9947" r="12" fill="#fff" />
+        <path d="M24,12H44.7812a23.9939,23.9939,0,0,0-41.5639.0029L13.6079,30l.0093-.0024A11.9852,11.9852,0,0,1,24,12Z" fill="url(#chrome-red)" />
+        <circle cx="24" cy="24" r="9.5" fill="#1a73e8" />
+        <path d="M34.3913,30.0029,24.0007,48A23.994,23.994,0,0,0,44.78,12.0031H23.9989l-.0025.0093A11.985,11.985,0,0,1,34.3913,30.0029Z" fill="url(#chrome-yellow)" />
+        <path d="M13.6086,30.0031,3.218,12.006A23.994,23.994,0,0,0,24.0025,48L34.3931,30.0029l-.0067-.0068a11.9852,11.9852,0,0,1-20.7778.007Z" fill="url(#chrome-green)" />
+      </symbol>
+    </svg>
+
     <!-- ── Nav ─────────────────────────────────────────────────────────────────────────── -->
     <header class="nav" id="nav">
       <a class="nav__mark" href="#top" aria-label="InertLink, back to top">
@@ -51,6 +76,7 @@
         <a href="#checks">Checks</a>
         <a href="#scoring">Scoring</a>
         <a href="#privacy">Privacy</a>
+        <a href="#install">Install</a>
         <a href="#contact">Contact</a>
       </nav>
 
@@ -66,7 +92,16 @@
           </svg>
           Source
         </a>
-        <a class="btn btn--primary" href="#install">Install</a>
+        <a
+          class="btn btn--primary nav__install-btn"
+          href="https://chromewebstore.google.com/detail/bjhdeglgoeanopffonmnhlnhbakihmed?utm_source=item-share-cb"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg class="chrome-logo" viewBox="0 0 48 48" width="14" height="14" aria-hidden="true" focusable="false"><use href="#chrome-logo" /></svg>
+          <span class="nav__btn-text nav__btn-text--full">Add to Chrome</span>
+          <span class="nav__btn-text nav__btn-text--short">Install</span>
+        </a>
       </div>
     </header>
 
@@ -84,7 +119,7 @@
 
         <p class="eyebrow" data-anim="eyebrow">
           <span class="dot" aria-hidden="true"></span>
-          Chrome extension · Manifest V3 · local-first
+          Now live on Chrome Web Store · Manifest V3 · local-first
         </p>
 
         <!-- The signature. The headline IS a URL, and it dissects itself: everything before the
@@ -112,7 +147,15 @@
         </p>
 
         <div class="hero__cta" data-anim="cta">
-          <a class="btn btn--primary btn--lg" href="#install">Install for Chrome</a>
+          <a
+            class="btn btn--primary btn--lg"
+            href="https://chromewebstore.google.com/detail/bjhdeglgoeanopffonmnhlnhbakihmed?utm_source=item-share-cb"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg class="chrome-logo" viewBox="0 0 48 48" width="18" height="18" aria-hidden="true" focusable="false"><use href="#chrome-logo" /></svg>
+            Add to Chrome — Free
+          </a>
           <a class="btn btn--ghost btn--lg" href="#demo">Try it below ↓</a>
         </div>
 
@@ -367,27 +410,136 @@
       <section class="section" id="install" data-rail="/install">
         <header class="section__head">
           <span class="section__num">06</span>
-          <h2 class="section__title">Install it</h2>
+          <h2 class="section__title">Get InertLink</h2>
           <p class="section__lede">
-            Submitted to the Chrome Web Store and awaiting review. Until it clears, load it
-            unpacked — it takes about a minute.
+            InertLink is live and officially published on the Chrome Web Store. Add it to Chrome in one click,
+            or inspect the source code and build it locally.
           </p>
         </header>
 
-        <ol class="steps">
-          <li>
-            <code>git clone https://github.com/iAaquibjawed/inertlink.git</code>
-          </li>
-          <li><code>npm install &amp;&amp; npm run build</code></li>
-          <li>
-            Open <code>chrome://extensions</code> and turn on <strong>Developer mode</strong>
-          </li>
-          <li>
-            <strong>Load unpacked</strong> → select the <code>dist/</code> folder
-            <span class="steps__warn">— not the repo folder above it</span>
-          </li>
-          <li>Open any page, click the InertLink icon, and hover a link</li>
-        </ol>
+        <div class="install-grid">
+          <!-- Primary: Official Chrome Web Store Card -->
+          <div class="store-card">
+            <div class="store-card__header">
+              <div class="store-card__icon-wrap">
+                <img
+                  src="./mark-dark-64.png"
+                  alt="InertLink extension icon"
+                  class="store-card__icon"
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                />
+              </div>
+              <div class="store-card__meta">
+                <div class="store-card__badge-row">
+                  <span class="store-badge store-badge--live">
+                    <span class="store-badge__dot" aria-hidden="true"></span>
+                    Chrome Web Store
+                  </span>
+                  <span class="store-badge store-badge--version">v0.2.0</span>
+                  <span class="store-badge store-badge--free">Free &amp; Open Source</span>
+                </div>
+                <h3 class="store-card__title">InertLink for Chrome</h3>
+                <p class="store-card__subtitle">Official release · Manifest V3 · Zero tracking</p>
+              </div>
+            </div>
+
+            <p class="store-card__desc">
+              Instantly see where links really go before you click. 14 offline heuristic checks,
+              zero network calls by default, and zero site permissions requested on install.
+            </p>
+
+            <div class="store-card__actions">
+              <a
+                class="btn btn--primary btn--lg store-card__cta"
+                href="https://chromewebstore.google.com/detail/bjhdeglgoeanopffonmnhlnhbakihmed?utm_source=item-share-cb"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg class="chrome-logo" viewBox="0 0 48 48" width="20" height="20" aria-hidden="true" focusable="false"><use href="#chrome-logo" /></svg>
+                Add to Chrome
+              </a>
+
+              <div class="store-card__link-box">
+                <span class="store-card__link-label">Direct Store Link</span>
+                <div class="store-card__link-row">
+                  <a
+                    class="store-card__link"
+                    href="https://chromewebstore.google.com/detail/bjhdeglgoeanopffonmnhlnhbakihmed?utm_source=item-share-cb"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span>chromewebstore.google.com/detail/bjhdeglgoeanopffonmnhlnhbakihmed</span>
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" width="13" height="13">
+                      <path d="M6 3h7v7M13 3L6 10" />
+                    </svg>
+                  </a>
+                  <button
+                    type="button"
+                    class="store-card__copy-btn"
+                    id="copyStoreLink"
+                    data-url="https://chromewebstore.google.com/detail/bjhdeglgoeanopffonmnhlnhbakihmed?utm_source=item-share-cb"
+                    aria-label="Copy store link to clipboard"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="13" height="13">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span class="copy-text">Copy link</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="store-card__features">
+              <div class="store-feature">
+                <span class="store-feature__icon" aria-hidden="true">🔒</span>
+                <span><strong>Local-first:</strong> Zero telemetry, zero network by default</span>
+              </div>
+              <div class="store-feature">
+                <span class="store-feature__icon" aria-hidden="true">⚡</span>
+                <span><strong>Instant:</strong> 250ms dwell verdict before you click</span>
+              </div>
+              <div class="store-feature">
+                <span class="store-feature__icon" aria-hidden="true">🛡️</span>
+                <span><strong>Minimal footprint:</strong> 0 permissions on install (activeTab)</span>
+              </div>
+              <div class="store-feature">
+                <span class="store-feature__icon" aria-hidden="true">🌐</span>
+                <span><strong>Compatible:</strong> Chrome, Brave, Edge, Arc &amp; Chromium</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Secondary: Install from Source / Unpacked -->
+          <details class="source-card">
+            <summary class="source-card__summary">
+              <span class="source-card__title">Prefer to inspect and build from source?</span>
+              <span class="source-card__hint">Developer mode instructions ↓</span>
+            </summary>
+            <div class="source-card__body">
+              <p class="source-card__lede">
+                InertLink is open source under MIT. You can audit every line, build the bundle locally,
+                and load it unpacked:
+              </p>
+              <ol class="steps">
+                <li>
+                  <code>git clone https://github.com/iAaquibjawed/inertlink.git</code>
+                </li>
+                <li><code>npm install &amp;&amp; npm run build</code></li>
+                <li>
+                  Open <code>chrome://extensions</code> and turn on <strong>Developer mode</strong>
+                </li>
+                <li>
+                  <strong>Load unpacked</strong> → select the <code>dist/</code> folder
+                  <span class="steps__warn">— not the repo folder above it</span>
+                </li>
+                <li>Open any page, click the InertLink icon, and hover a link</li>
+              </ol>
+            </div>
+          </details>
+        </div>
       </section>
 
       <!-- ── Contact ──────────────────────────────────────────────────────────────────── -->
@@ -452,6 +604,7 @@
         be told.
       </p>
       <nav class="foot__links" aria-label="Legal">
+        <a href="https://chromewebstore.google.com/detail/bjhdeglgoeanopffonmnhlnhbakihmed?utm_source=item-share-cb" target="_blank" rel="noopener noreferrer">Chrome Web Store</a>
         <a href="./privacy/">Privacy</a>
         <a href="./terms/">Terms</a>
         <a href="https://github.com/iAaquibjawed/inertlink" target="_blank" rel="noopener noreferrer">Source</a>
