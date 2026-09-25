@@ -33,6 +33,7 @@ for (let i = 0; i < (SISTERS.clusters ?? []).length; i++) {
  * @property {string}   registrable Best-effort eTLD+1.
  * @property {string}   registrableLabel  The eTLD+1 minus its suffix — 'paypal' in 'paypal.co.uk'.
  * @property {string}   tld        Public suffix ('com', 'co.uk').
+ * @property {string}   hosting    Free-hosting platform suffix ('vercel.app'), or '' if none.
  * @property {string}   path
  * @property {string}   query
  * @property {string}   port       '' when default.
@@ -83,13 +84,50 @@ export function isInertLinkHref(rawUrl) {
 /** Schemes we understand well enough to reason about at all. */
 const NAVIGABLE_SCHEMES = new Set(['http:', 'https:', 'ftp:', 'ws:', 'wss:']);
 
-const PUBLIC_SUFFIXES = new Set(TLDS.publicSuffixes ?? []);
+const HOSTING_SUFFIXES = new Set(TLDS.hostingSuffixes ?? []);
+const PUBLIC_SUFFIXES = new Set([...(TLDS.publicSuffixes ?? []), ...HOSTING_SUFFIXES]);
+
+/**
+ * Second-level labels that countries sell *under* their ccTLD: `com.do`, `co.ls`, `net.et`.
+ * The curated list above cannot name every one, and missing one is not a cosmetic bug — it made
+ * `r.oblox.com.et` parse as registrable domain `com.et`, which hid the lookalike from every
+ * brand check. Any of these followed by a two-letter TLD is treated as a public suffix.
+ */
+const GENERIC_SLDS = new Set(['com', 'co', 'net', 'org', 'gov', 'edu', 'ac', 'or', 'ne', 'go', 'gob', 'mil', 'nic', 'gouv']);
 
 const IPV4_RE = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 /** Decimal / octal / hex integer hosts — 'http://2130706433/' is 127.0.0.1 wearing a disguise. */
 const INTEGER_HOST_RE = /^(0x[0-9a-f]+|0[0-7]+|\d+)$/i;
 
 export { DANGEROUS_SCHEMES, NAVIGABLE_SCHEMES };
+
+/**
+ * Loopback, RFC 1918, CGNAT (Tailscale), link-local, IPv6 ULA, and bare 'localhost'.
+ * Links here are the user's router, dev server, or VPN — never the open internet, and never
+ * something to warn about (ADR-0019; the same carve-out ip-host and nonstandard-port make).
+ */
+const LOCAL_HOST = /^(localhost$|127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.|\[::1\]|\[fe80|\[f[cd])/i;
+
+/**
+ * Registries an attacker cannot buy into: `.gov`, `.edu`, and their country forms (`gov.bd`,
+ * `go.id`, `gob.mx`, `ac.uk`). A name under one of these is not a typo of anything — `finance.gov.bd`
+ * is Bangladesh's finance ministry, not a misspelt 'binance'.
+ */
+const GATED_SLD = /^(gov|govt|mil|edu|ac|gob|gouv|go|gv|nic)\.[a-z]{2}$/;
+const GATED_TLD = new Set(TLDS.safe ?? []);
+
+export function isGatedSuffix(tld) {
+  return GATED_TLD.has(tld) || GATED_SLD.test(tld ?? '');
+}
+
+export function isLocalHost(host) {
+  return LOCAL_HOST.test(host ?? '');
+}
+
+/** Which free-hosting platform, if any, this public suffix belongs to. */
+function hostingOf(tld) {
+  return HOSTING_SUFFIXES.has(tld) ? tld : '';
+}
 
 /** Is this hostname an IP literal (v4, v6, or an integer/hex encoding of one)? */
 function detectIpHost(host) {
@@ -118,7 +156,8 @@ function splitRegistrable(labels) {
   if (labels.length >= 3 && PUBLIC_SUFFIXES.has(lastThree)) {
     return { registrable: labels.slice(-4).join('.'), tld: lastThree };
   }
-  if (PUBLIC_SUFFIXES.has(lastTwo)) {
+  const [sld, cc] = labels.slice(-2);
+  if (PUBLIC_SUFFIXES.has(lastTwo) || (labels.length >= 3 && cc.length === 2 && GENERIC_SLDS.has(sld))) {
     return { registrable: labels.slice(-3).join('.'), tld: lastTwo };
   }
   return { registrable: lastTwo, tld: labels[labels.length - 1] };
@@ -182,6 +221,7 @@ export function parseUrl(rawUrl, base) {
       registrable: '',
       registrableLabel: '',
       tld: '',
+      hosting: '',
       path: url.pathname ?? '',
       query: url.search ?? '',
       port: '',
@@ -218,6 +258,8 @@ export function parseUrl(rawUrl, base) {
     registrable,
     registrableLabel,
     tld,
+    // The platform's own apex (`vercel.app` itself) is the vendor, not an anonymous tenant.
+    hosting: host === tld ? '' : hostingOf(tld),
     path: url.pathname ?? '',
     query: url.search ?? '',
     port: url.port ?? '',

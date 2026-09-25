@@ -143,7 +143,7 @@ async function verifyContentIsLean() {
     }
   }
   const kb = Math.round(text.length / 1024);
-  if (kb > 80) throw new Error(`content.js is ${kb}kb — over the 80kb budget (ADR-0002).`);
+  if (kb > 120) throw new Error(`content.js is ${kb}kb — over the 120kb budget (ADR-0002, raised in ADR-0019).`);
   console.log(`[inertlink] content script: ${kb}kb, dependency-free`);
 }
 

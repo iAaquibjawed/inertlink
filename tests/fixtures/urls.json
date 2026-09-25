@@ -125,11 +125,11 @@
     },
     {
       "url": "https://cheap-deals.xyz/offer",
-      "expect": "safe",
+      "expect": "caution",
       "signals": [
         "suspicious-tld"
       ],
-      "note": "A risky TLD on its own is a contributing signal, not a verdict."
+      "note": "Cheap TLD + a name the URL model reads as spam-shaped: caution, never red on this alone (ADR-0019)."
     },
     {
       "url": "https://invoice-2026.zip/download",
@@ -336,6 +336,129 @@
       "expect": "safe",
       "signals": [],
       "note": "Proofpoint v3 wrapper unwrapped to clean destination."
+    },
+    {
+      "url": "https://snapchat-web-demo.vercel.app/",
+      "expect": "danger",
+      "signals": [
+        "brand-impersonation",
+        "free-hosting"
+      ],
+      "note": "Real-feed shape: exact brand name, padded, on a free host. Used to read safe."
+    },
+    {
+      "url": "http://whatsapp-help-demo877.blogspot.com/",
+      "expect": "danger",
+      "signals": [
+        "brand-impersonation",
+        "free-hosting"
+      ],
+      "note": "Brand + digits on blogspot. typosquat skips exact names, so nothing caught this."
+    },
+    {
+      "url": "https://facebookzaman-demo.blogspot.com/",
+      "expect": "danger",
+      "signals": [
+        "brand-impersonation",
+        "free-hosting"
+      ],
+      "note": "Brand glued to other letters on a free host, and the URL model agrees: three independent signals."
+    },
+    {
+      "url": "https://www.roblox.com.do/users/1/profile",
+      "expect": "caution",
+      "signals": [
+        "brand-impersonation"
+      ],
+      "note": "Brand label on a ccTLD it does not use. Used to pass as Roblox via the regional-ccTLD rule."
+    },
+    {
+      "url": "https://paypal.xyz/",
+      "expect": "danger",
+      "signals": [
+        "brand-impersonation",
+        "suspicious-tld"
+      ],
+      "note": "A brand's name on a cheap gTLD is never its regional site."
+    },
+    {
+      "url": "https://www.r.oblox.com.et/communities/1",
+      "expect": "danger",
+      "signals": [
+        "typosquat"
+      ],
+      "note": "com.et was not a known suffix, so this parsed as registrable 'com.et' and hid the lookalike."
+    },
+    {
+      "url": "https://www.amazon.de/gp/product/1",
+      "expect": "safe",
+      "signals": [],
+      "note": "A regional brand on its own ccTLD stays safe."
+    },
+    {
+      "url": "https://googleapis.com/",
+      "expect": "safe",
+      "signals": [],
+      "note": "Brand-owned infrastructure (sister cluster) is not impersonation."
+    },
+    {
+      "url": "https://pcloud.com/",
+      "expect": "safe",
+      "signals": [],
+      "note": "One edit from 'icloud' is every '?cloud' company; icloud is homoglyph-only."
+    },
+    {
+      "url": "https://some-project-demo.github.io/docs/",
+      "expect": "caution",
+      "signals": [
+        "free-hosting"
+      ],
+      "note": "A long hyphenated tenant name on a free host reads as kit-shaped to the URL model. Amber with a reason, not red; measured on real hosted https pages it flags ~1 in 12 (ADR-0019)."
+    },
+    {
+      "url": "https://microsoft.github.io/",
+      "expect": "safe",
+      "signals": [],
+      "note": "An exact org name on github.io is the org — GitHub enforces trademark on org names."
+    },
+    {
+      "url": "https://demo-user-000.github.io/Instagram-profile/",
+      "expect": "danger",
+      "signals": [
+        "free-hosting"
+      ],
+      "note": "A brand named in the path of an anonymous free page — the exact shape of live OpenPhish entries — and the model agrees."
+    },
+    {
+      "url": "http://your-account-login.invalid/",
+      "expect": "danger",
+      "signals": [
+        "credential-lure",
+        "non-https"
+      ],
+      "note": "Lure words in the registered name, over http, and the URL model agrees."
+    },
+    {
+      "url": "https://login.gov/",
+      "expect": "safe",
+      "signals": [],
+      "note": "Gated TLD: the US government's sign-in service is not a lure."
+    },
+    {
+      "url": "https://demo-name.duckdns.org/",
+      "expect": "safe",
+      "signals": [
+        "free-hosting"
+      ],
+      "note": "Dynamic DNS counts as free hosting."
+    },
+    {
+      "url": "https://s4w.in/abc",
+      "expect": "caution",
+      "signals": [
+        "url-shortener"
+      ],
+      "note": "Shortener seen in live phishing feeds."
     }
   ]
 }

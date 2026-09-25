@@ -21,6 +21,15 @@ export const WEIGHTS = Object.freeze({
   'punycode-idn': 35,
   typosquat: 50,
   'deceptive-subdomain': 45,
+  // Below dangerAt alone: a brand's name on someone else's domain is caution by itself, and
+  // danger once it stacks with a free host, a lure word, or plain http.
+  'brand-impersonation': 35,
+  'free-hosting': 15,
+  'credential-lure': 12,
+  // Learned model (ADR-0019). The maximum, reached at MODEL_BAND.full; scaled down below it.
+  // Deliberately below balanced dangerAt: a learned score is one piece of evidence, so on its
+  // own it can say "caution", and red needs a second, independent signal to agree.
+  'url-model': 35,
   'suspicious-tld': 15,
   'url-shortener': 20,
   'excessive-subdomains': 15,
@@ -30,6 +39,14 @@ export const WEIGHTS = Object.freeze({
   'local-blocklist': 100,
   allowlist: -100,
 });
+
+/**
+ * How the model's probability maps onto its weight: zero at `floor`, the full weight at `full`,
+ * linear between. Calibrated with scripts/model/eval.mjs against real legitimate links with paths
+ * — the false-alarm rate on those, not on homepages, is what sets `floor`. `established` is the
+ * multiplier on a top-sites domain (popular.js).
+ */
+export const MODEL_BAND = Object.freeze({ floor: 0.8, full: 0.995, established: 0.25, hosting: 0.5 });
 
 /**
  * Score bands. `[cautionAt, dangerAt]` — below cautionAt is safe, at/above dangerAt is danger,

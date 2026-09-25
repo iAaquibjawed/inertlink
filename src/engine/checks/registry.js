@@ -17,6 +17,10 @@ import localBlocklist from './local-blocklist.js';
 import userinfoTrick from './userinfo-trick.js';
 import typosquat from './typosquat.js';
 import deceptiveSubdomain from './deceptive-subdomain.js';
+import brandImpersonation from './brand-impersonation.js';
+import freeHosting from './free-hosting.js';
+import credentialLure from './credential-lure.js';
+import urlModel from './url-model.js';
 import textHrefMismatch from './text-href-mismatch.js';
 import punycodeIdn from './punycode-idn.js';
 import ipHost from './ip-host.js';
@@ -34,12 +38,16 @@ export const CHECKS = [
   userinfoTrick,
   typosquat,
   deceptiveSubdomain,
+  brandImpersonation,
   textHrefMismatch,
   punycodeIdn,
   ipHost,
   encodedObfuscation,
   urlShortener,
   suspiciousTld,
+  freeHosting,
+  credentialLure,
+  urlModel,
   excessiveSubdomains,
   nonstandardPort,
   nonHttps,

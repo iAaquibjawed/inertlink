@@ -27,10 +27,17 @@ WHAT IT CATCHES
 • Letters from other alphabets chosen because they look like English ones
 • Bare IP addresses instead of real domain names
 • Shortened links that hide their destination
+• Brand names padded onto someone else's domain — brand-login-help.example-host.invalid
+• Throwaway pages on free hosting and dynamic-DNS services, where most live phishing sits
 • Unencrypted sign-in pages, odd ports, heavy encoding, and more
 
-Fourteen independent checks, each contributing to a score. No single rule decides the answer,
+Eighteen independent checks, each contributing to a score. No single rule decides the answer,
 which keeps one over-eager heuristic from painting the whole web red.
+
+One of them is learned rather than written: a pattern model trained on hundreds of thousands of
+real phishing and ordinary links, so it can recognise the shape of a phishing address nobody has
+reported yet. It ships inside the extension as a small table of numbers and runs entirely in your
+browser. Your links are never sent anywhere to be scored, and never used to train it.
 
 IT DOESN'T PHONE HOME
 
@@ -40,6 +47,9 @@ extension.
 Hovering a link never contacts that link. InertLink reads the address as text — it never follows
 it, and never expands shortened links, because that would send a request to the site from your
 computer that you never asked for.
+
+Links shown inside Gmail, Outlook and other webmail are judged a step more strictly, because
+email is how most phishing arrives.
 
 An optional second opinion exists for links the local checks can't settle. It is off by default,
 needs your own API key, and sends only the hostname — never the path, never the query string.

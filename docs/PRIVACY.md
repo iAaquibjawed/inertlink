@@ -12,6 +12,11 @@ little.
 not on install, not when you hover a link, not on a schedule. Every check runs against data
 bundled inside the extension.
 
+That includes the pattern model that recognises phishing-shaped addresses. It was trained
+before release on public lists of phishing and ordinary links; what ships is a small table of
+numbers, and scoring a link with it happens entirely in your browser. Your links are never used
+to train it, and never sent anywhere to be scored.
+
 Hovering a link **never contacts that link**. InertLink reads the address as text. It does not
 follow it, resolve it, prefetch it, or expand shortened links, because doing so would send a
 request to that site from your computer that you never asked for.

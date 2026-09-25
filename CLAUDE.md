@@ -54,7 +54,7 @@ where cheap, but don't block on it.
   - `engine/`, `content/`, `worker/`, `shared/` — **plain vanilla JS + ES modules, zero
     dependencies**. This is non-negotiable for `content/`: it runs on every page the user grants
     (ADR-0002), and the build **asserts** it — React/Framer Motion in `content.js`, or a bundle
-    over 80kb, fails `npm run build`.
+    over 120kb (raised from 80kb for the URL model and popularity filter, ADR-0019), fails `npm run build`.
   - `content/` is bundled to one **classic IIFE, unminified** (`dist/content/content.js`), because
     content scripts cannot be ES modules. Unminified so it can be read against `src/` (ADR-0007).
   - `worker/` is bundled to ESM. `shared/tokens.css` is copied verbatim for the two HTML pages.
@@ -66,7 +66,13 @@ where cheap, but don't block on it.
     dependency needs a new ADR.
 - **Design system:** `design-system/inertlink/MASTER.md` is the source of truth for color, type,
   spacing, and motion. Tokens are mirrored in `src/shared/tokens.css`. Change MASTER.md first.
-- **Detection:** Hybrid — local heuristics (Layer 1) + reputation API (Layer 2). Default API is
+- **Detection:** Hybrid — local heuristics **plus a learned URL model** (Layer 1) + reputation API
+  (Layer 2). The model (ADR-0019) is a logistic regression trained offline by `scripts/model/`
+  on public phishing feeds vs. real legitimate links; only its static weights ship
+  (`src/engine/data/url-model.json`). Its job is phish nobody has reported yet. Any change to
+  `src/engine/model/features.js` requires a retrain (`npm run model:train`), and any detection
+  change must be re-measured with `npm run model:eval` — against legitimate links *with paths*,
+  not just homepages. Default API is
   **Google Safe Browsing** (Update API preferred for privacy; Lookup API acceptable for MVP behind
   a user-supplied key). `urlscan.io` / PhishTank are optional secondary providers behind an
   interface.
@@ -108,7 +114,8 @@ where cheap, but don't block on it.
 ## 7. Out of scope for v1 (park these)
 
 Full-page content scanning, form/credential-field warnings, enterprise policy sync, a hosted
-backend, ML models. Note good ideas in `PLAN.md` §"Backlog" instead of building them.
+backend, ML models beyond the offline-trained URL model of ADR-0019 (no page-content models, no
+models that need the network or a runtime dependency). Note good ideas in `PLAN.md` §"Backlog" instead of building them.
 
 ## 8. When unsure
 

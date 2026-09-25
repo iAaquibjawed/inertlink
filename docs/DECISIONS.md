@@ -520,3 +520,111 @@ Only recognized, reputable security gateways with strict host patterns (`*.safel
 - Added `outlook.com`, `office365.com`, and `atlassian.net` to `known-safe.json`.
 - Tested in `tests/unwrap.test.js`, with fixtures in `tests/fixtures/urls.json` and `tests/manual/phishing-sandbox.html`.
 
+## ADR-0018 — Detection is measured against live phishing feeds, not only hand-written fixtures
+
+**Date:** 2026-09-25 · **Phase:** 5 · **Status:** accepted
+
+**Found:** hovering real PhishTank entries showed green for nearly all of them. Scored offline against
+300 live URLs from the OpenPhish community feed, Layer 1 called **275 safe (8% caught)**. Against a
+separate 3,000-URL sample from Phishing.Database it caught **16%**. The golden fixtures were all
+green because they only contained shapes we had imagined.
+
+**Why it missed:**
+1. **Free hosting laundered the host.** Over half the misses sat on `*.vercel.app`, `*.pages.dev`,
+   `*.blogspot.com`, `*.godaddysites.com`… Treating those as public suffixes is correct (tenants must
+   not share reputation), but it also made every tenant look like a clean, shallow domain.
+2. **Brand names with padding matched nothing.** `whatsapp-indonesia877`, `snapchat-web`,
+   `xfinityloginxfinity`. `typosquat` skips exact names by design; `deceptive-subdomain` only sees a
+   brand as a whole subdomain label.
+3. **Brand-on-any-TLD bypass.** Both brand checks treated *any* domain whose label equalled a brand as
+   the brand (`roblox.com.do`, `roblox.ly`, `paypal.xyz`).
+4. **Unknown `com.<cc>` suffixes misparsed.** `r.oblox.com.et` had registrable domain `com.et`.
+
+**Chose:** three checks (`brand-impersonation`, `free-hosting`, `credential-lure`), one shared
+`engine/brands.js` that owns "is this the brand's own domain?", `regional`/`homoglyphOnly` brand
+flags, generic `com|co|net|org….<cc>` suffix parsing, a hosting/dynamic-DNS/IPFS suffix list, and
+brand-owned infrastructure in `sister-domains.json` so `googleapis.com` and `tiktokcdn.com` stay silent.
+
+**Result (balanced / strict):** OpenPhish 8% → **49% / 77%**; held-out Phishing.Database 16% →
+**24% / 48%**. False alarms on the Tranco top 5,000 domains went **down**, 1.0% → **0.66%** (danger
+0.24% → 0.04%) — mostly from fixing `icloud` matching every `?cloud` company.
+
+**What this does not fix, and cannot:** most of the remaining misses are compromised legitimate
+sites (`some-shop.com.br/wp-includes/…/login.php`) and random throwaway names. Nothing in the URL
+string distinguishes those; only threat intelligence does. See the feed decision this ADR leaves open.
+
+**Consequences:** content bundle 62kb → 73kb (budget 80kb). Any future detection change should be
+re-scored against a live feed and a benign top-sites list, not only the fixtures.
+
+
+## ADR-0019 — A learned URL-pattern model, trained offline, catches phish nobody has reported
+
+**Date:** 2026-09-25 · **Phase:** 5 · **Status:** accepted · **Amends:** CLAUDE.md §7 ("ML models" out
+of scope), ADR-0002 (content bundle budget 80kb → 120kb)
+
+**Problem:** blocklists and reputation APIs only know a phish after someone reports it; the
+victims in between are the product's whole reason to exist. ADR-0018's hand-written rules
+reached 49% on fresh OpenPhish entries and plateaued — the rest had no single tell a rule could
+name. The product owner's direction: learn the pattern from the large public corpora instead.
+
+**Chose:** a logistic regression over lexical URL features (host trigrams, host/path/query words,
+shapes, lengths, ratios), trained offline by `scripts/model/`. Only static weights ship
+(`src/engine/data/url-model.json`, 13.6kb, int8 + varint, base64). Scoring is pure, offline, and a
+few hundred additions per hover. The trainer imports the engine's own `features.js`, so training
+and runtime cannot see a URL differently.
+
+**Data** (`npm run model:data`, gitignored `.model-data/`, never committed):
+- phishing: Phishing.Database ACTIVE (sampled) + PhiUSIIL phishing — ~250k
+- legitimate: Tranco top 5k–150k homepages (sampled), **~156k real links cited on Wikipedia in 34
+  languages**, Common Crawl pages of top sites, and ~2.7k real login/account/admin URLs from the
+  Wayback CDX (repeated ×25 so they are not drowned out)
+- evaluation only, excluded from training by domain: fresh OpenPhish, a Phishing.Database
+  hold-out, Tranco top 5k, a separate Wikipedia batch on unseen hosts, held-out login pages
+
+**The trap this avoids:** PhiUSIIL's 134k "legitimate" URLs are all bare homepages. Trained on
+those, the model learned "has a path = phishing" and flagged 15% of real Wikipedia links. Every
+public phishing dataset we looked at has this shape; the legitimate side has to be built.
+
+**Guards that keep a learned score from overruling what the rules know:**
+- features a rule already owns are excluded (free hosting, brand names, IP host, scheme)
+- never scored for local-network hosts
+- ×0.25 on established domains — a Bloom filter of the Tranco top 10k (`popular.js`, 15.6kb, ~1%
+  false positives) — and on gated registries (`gov.bd`, `ac.uk`). Measured: 1–3% of fresh phish
+  sit on a top-10k domain versus 16% of ordinary links.
+- ×0.5 on free-hosting tenants, where `free-hosting` already speaks for the platform
+- capped at weight 35, below balanced `dangerAt`: on its own the model can say caution; red needs
+  a second, independent signal
+
+**Result (balanced; whole engine, i.e. what the user sees):**
+
+| set | before ADR-0018 | ADR-0018 rules | + model |
+|---|---|---|---|
+| fresh OpenPhish (never trained on) | 8% caught | 49% | **75%** |
+| Phishing.Database hold-out | 16% | 24% | **77%** |
+| Tranco top 5k, false alarms | 1.0% | 0.66% | **0.3%** (0.0% red) |
+| real links with paths, https, false alarms | — | — | **0.5%** (0.1% red) |
+| real links with paths, http, false alarms | — | — | 2.7% |
+| held-out login/account URLs of ordinary sites | — | — | 18% (see below) |
+
+**Known limits, stated plainly:**
+- *Login pages of unfamiliar legitimate sites* are the hard case. A shop's `/myaccount/login` and a
+  kit's `/login.php` read almost the same. The popularity prior covers established sites; a small
+  site outside the top 10k can read amber. The 18% above is inflated by Wayback noise (asset
+  files, tracking pixels, one piracy site, a cloud bucket), but it is the number to drive down.
+- *Compromised legitimate sites* whose kit hides in an ordinary-looking path are the least
+  catchable by any URL-only method.
+- Old `http://` links on free hosts read amber (free-hosting + http); rare in today's email.
+
+**Also in this change:** links inside webmail (Gmail, Outlook, Yahoo, Proton, …) are judged one
+sensitivity step stricter, since email is how most phishing arrives. `encoded-obfuscation` no
+longer flags UTF-8-encoded non-English URLs, encoded filenames, or pronounceable compound names,
+and its alphanumeric-escape regex lost a stateful `g` flag that made the same URL score
+differently depending on what was hovered before it.
+
+**Consequences:**
+- Content bundle 73kb → 113kb; budget raised to 120kb. Still dependency-free (ADR-0002's actual
+  concern). Pruning the model to fit 100kb cost ~6 points of detection; not worth 7kb.
+- `features.js` changes require `npm run model:train`; `tests/model.test.js` fails if the shipped
+  weights and the feature code disagree on dimensions.
+- Retrain periodically: phishing shapes drift. `npm run model:eval` before shipping any detection
+  change, against legitimate links **with paths**, not just homepages.

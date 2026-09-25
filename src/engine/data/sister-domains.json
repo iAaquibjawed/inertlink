@@ -2,7 +2,8 @@
   "$comment": [
     "Clusters of registrable domains owned and operated by the same organization.",
     "Used to prevent false positives in text-href-mismatch, deceptive-subdomain,",
-    "and encoded-obfuscation (OAuth/SSO redirect) checks."
+    "and encoded-obfuscation (OAuth/SSO redirect) checks.",
+    "Also consulted by brands.js: a domain in a brand's cluster is the brand's own, so its CDN and API hosts (googleapis.com, tiktokcdn.com) never read as impersonation."
   ],
   "clusters": [
     [
@@ -18,7 +19,18 @@
       "bing.com",
       "windows.net",
       "skype.com",
-      "1drv.ms"
+      "1drv.ms",
+      "microsoft365.com",
+      "onmicrosoft.com",
+      "microsoftonline.us",
+      "s-microsoft.com",
+      "microsoftpersonalcontent.com",
+      "microsoftapp.net",
+      "microsoftazuread-sso.com",
+      "sharepointonline.com",
+      "office365.us",
+      "onedrive.com",
+      "cloud.microsoft"
     ],
     [
       "google.com",
@@ -28,12 +40,28 @@
       "googleusercontent.com",
       "gstatic.com",
       "android.com",
-      "g.co"
+      "g.co",
+      "googleapis.com",
+      "googleapis.cn",
+      "googlevideo.com",
+      "googletagmanager.com",
+      "googletagservices.com",
+      "googlesyndication.com",
+      "googleadservices.com",
+      "google-analytics.com",
+      "googledomains.com",
+      "googleblog.com",
+      "googlesource.com",
+      "googlehosted.com",
+      "googlezip.net",
+      "withgoogle.com"
     ],
     [
       "twitter.com",
       "x.com",
-      "t.co"
+      "t.co",
+      "ads-twitter.com",
+      "twimg.com"
     ],
     [
       "facebook.com",
@@ -42,7 +70,11 @@
       "instagram.com",
       "whatsapp.com",
       "meta.com",
-      "messenger.com"
+      "messenger.com",
+      "facebook.net",
+      "fbcdn.net",
+      "cdninstagram.com",
+      "whatsapp.net"
     ],
     [
       "atlassian.com",
@@ -54,7 +86,15 @@
     [
       "apple.com",
       "icloud.com",
-      "apple.co"
+      "apple.co",
+      "apple-dns.net",
+      "apple-dns.cn",
+      "cdn-apple.com",
+      "apple-cloudkit.com",
+      "icloud-content.com",
+      "icloud.com.cn",
+      "apple.news",
+      "mzstatic.com"
     ],
     [
       "amazon.com",
@@ -67,7 +107,15 @@
       "amazon.it",
       "amazon.es",
       "amazon.in",
-      "amazonaws.com"
+      "amazonaws.com",
+      "amazonvideo.com",
+      "amazon-adsystem.com",
+      "amazon.dev",
+      "media-amazon.com",
+      "ssl-images-amazon.com",
+      "amazontrust.com",
+      "amazonalexa.com",
+      "amazonaws.com.cn"
     ],
     [
       "github.com",
@@ -80,19 +128,109 @@
     ],
     [
       "spotify.com",
-      "spoti.fi"
+      "spoti.fi",
+      "spotifycdn.com",
+      "tospotify.com",
+      "scdn.co"
     ],
     [
       "telegram.org",
-      "t.me"
+      "t.me",
+      "telegram.me",
+      "telegra.ph"
     ],
     [
       "discord.com",
-      "discord.gg"
+      "discord.gg",
+      "discordapp.com",
+      "discordapp.net",
+      "discord.media"
     ],
     [
       "reddit.com",
       "redd.it"
+    ],
+    [
+      "tiktok.com",
+      "tiktokv.com",
+      "tiktokv.us",
+      "tiktokv.eu",
+      "tiktokw.us",
+      "tiktokcdn.com",
+      "tiktokcdn-us.com",
+      "tiktokcdn-eu.com",
+      "tiktokpangle.us",
+      "tiktokrow-cdn.com",
+      "tiktokio.com",
+      "tiktok-row.net",
+      "tiktokpangle-cdn-us.com",
+      "tiktokglobalshopv.com",
+      "byteoversea.com"
+    ],
+    [
+      "dropbox.com",
+      "dropboxusercontent.com",
+      "dropboxapi.com",
+      "dropbox-dns.com",
+      "db.tt"
+    ],
+    [
+      "yahoo.com",
+      "yahoo.net",
+      "yahoo.cloud",
+      "yimg.com"
+    ],
+    [
+      "netflix.com",
+      "netflix.net",
+      "nflxvideo.net",
+      "nflximg.net"
+    ],
+    [
+      "adobe.com",
+      "adobe.net",
+      "adobe.io",
+      "adobelogin.com"
+    ],
+    [
+      "comcast.com",
+      "comcast.net",
+      "xfinity.com"
+    ],
+    [
+      "stripe.com",
+      "stripe.network"
+    ],
+    [
+      "shopee.com",
+      "shopeemobile.com"
+    ],
+    [
+      "walmart.com",
+      "walmartimages.com"
+    ],
+    [
+      "mercadolibre.com",
+      "mercadolivre.com.br",
+      "mercadopago.com",
+      "mlstatic.com"
+    ],
+    [
+      "paypal.com",
+      "paypalobjects.com",
+      "paypal.me",
+      "venmo.com"
+    ],
+    [
+      "ebay.com",
+      "ebayimg.com",
+      "ebaystatic.com"
+    ],
+    [
+      "example.com",
+      "example.net",
+      "example.org",
+      "example.test"
     ]
   ]
 }

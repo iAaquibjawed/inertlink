@@ -9,7 +9,37 @@
 import { VERDICT } from '../shared/messages.js';
 import { CHECKS } from './checks/registry.js';
 import { scoreToVerdict } from './scoring.js';
-import { parseUrl } from './parse.js';
+import { parseUrl, hostMatches } from './parse.js';
+import { SENSITIVITY } from '../shared/settings.js';
+
+/**
+ * Webmail hosts. A link read inside one of these arrived by email — the channel almost every
+ * phishing link uses — so the engine judges it one sensitivity step stricter (ADR-0019). The
+ * user's own choice still anchors it: 'relaxed' becomes 'balanced', never 'strict'.
+ */
+const WEBMAIL = [
+  'mail.google.com',
+  'outlook.live.com',
+  'outlook.office.com',
+  'outlook.office365.com',
+  'mail.yahoo.com',
+  'mail.aol.com',
+  'mail.proton.me',
+  'app.fastmail.com',
+  'mail.zoho.com',
+  'www.icloud.com',
+];
+const STRICTER = {
+  [SENSITIVITY.RELAXED]: SENSITIVITY.BALANCED,
+  [SENSITIVITY.BALANCED]: SENSITIVITY.STRICT,
+  [SENSITIVITY.STRICT]: SENSITIVITY.STRICT,
+};
+
+/** The sensitivity actually applied: the user's, tightened by one step inside webmail. */
+export function effectiveSensitivity(sensitivity = SENSITIVITY.BALANCED, pageHost = '') {
+  const inMail = WEBMAIL.some((h) => hostMatches(pageHost, h));
+  return inMail ? (STRICTER[sensitivity] ?? SENSITIVITY.STRICT) : sensitivity;
+}
 
 /**
  * @typedef {Object} CheckResult
@@ -69,7 +99,7 @@ export function evaluate(rawUrl, context = {}) {
   signals.sort((a, b) => Math.abs(b.weight) - Math.abs(a.weight));
   const score = signals.reduce((sum, s) => sum + s.weight, 0);
 
-  const verdict = scoreToVerdict(score, signals, context.sensitivity, {
+  const verdict = scoreToVerdict(score, signals, effectiveSensitivity(context.sensitivity, context.pageHost), {
     checksRun: CHECKS.length,
   });
   return { ...verdict, parsed, wrapper: parsed.wrapper ?? null };

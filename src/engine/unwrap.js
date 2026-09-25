@@ -12,7 +12,7 @@
  *   2. Blind spot to real threats: If the gateway host is allowlisted, a real phishing link
  *      delivered in an email and wrapped by Safe Links would be branded as "Safe — outlook.com"!
  *
- * The solution: unwrap the gateway link offline to reveal the REAL destination. All 14 detection
+ * The solution: unwrap the gateway link offline to reveal the REAL destination. Every detection
  * checks then evaluate the target destination. If the target is Jira, it is Safe. If the target
  * is paypa1.com, it is flagged as Danger — with the badge clearly noting the gateway wrapper.
  *

@@ -3,7 +3,7 @@
 InertLink shows a safety verdict for a link before you click it.
 
 When you rest the cursor on a link, the extension reads that link's address as text and scores it
-with local heuristics, then shows a small badge next to the cursor naming the registrable domain
+with local heuristics and a pattern model bundled inside the extension, then shows a small badge next to the cursor naming the registrable domain
 the link really points to. This helps a user notice lookalike and deceptive addresses — such as
 "example.com.secure-billing.invalid" or "example.com@attacker.invalid" — before clicking them.
 

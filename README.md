@@ -5,7 +5,7 @@
 ### See where a link really goes — before you click it
 
 Hover any link and a badge names the site that **actually** owns it.<br>
-Fourteen checks, on your device, with **zero network by default**.
+Eighteen checks — one of them a learned URL-pattern model — on your device, with **zero network by default**.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-5BD6A4.svg?style=flat-square)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/Chrome-Manifest%20V3-F2B441.svg?style=flat-square)](src/manifest.json)
@@ -72,7 +72,7 @@ Nothing is requested at install ([ADR-0010](docs/DECISIONS.md), [ADR-0012](docs/
 
 ```
 hover → 250 ms dwell → parse the href as a string (never fetched)
-      → 14 independent checks, each returning { id, hit, weight, reason }
+      → 18 independent checks, each returning { id, hit, weight, reason }
       → sum the weights → threshold by sensitivity → safe / caution / danger
       → borderline AND online checks on AND not allowlisted?
            → service worker → cache? → provider (hostname only) → worst-wins merge

@@ -47,6 +47,10 @@ Planned checks (each becomes `src/engine/checks/<id>.js`):
 | `punycode-idn` | IDN/punycode homograph | `xn--pypal-4ve.com`, mixed-script hosts |
 | `typosquat` | Edit-distance to a known brand | `paypa1.com`, `g00gle.com`, `micros0ft-support.com` |
 | `deceptive-subdomain` | Brand as subdomain of another host | `paypal.com.secure-login.ru` |
+| `brand-impersonation` | Brand name inside a domain it doesn't own | `snapchat-web.vercel.app`, `roblox.com.do` |
+| `free-hosting` | Anonymous free host / dynamic DNS / IPFS | `*.pages.dev`, `*.duckdns.org` |
+| `credential-lure` | Sign-in words in the registered name | `your-account-login.com` |
+| `url-model` | Learned: the URL is *shaped* like phishing (ADR-0019) | unreported phish no rule names |
 | `suspicious-tld` | High-abuse TLDs (weighted, tunable) | `.zip`, `.mov`, `.tk`, `.top` |
 | `url-shortener` | Destination hidden behind a shortener | `bit.ly/…`, `t.co/…` → "unknown target" |
 | `excessive-subdomains` | Unusually deep host | `a.b.c.d.e.example.com` |

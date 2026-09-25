@@ -12,7 +12,10 @@
     "e2e": "npm run build && node tests/e2e/run.mjs",
     "test:watch": "vitest",
     "site": "node site/build.mjs",
-    "site:dev": "node site/build.mjs --watch --serve"
+    "site:dev": "node site/build.mjs --watch --serve",
+    "model:data": "node scripts/model/fetch-data.mjs && node scripts/model/run.mjs popular --tranco .model-data/top-1m.csv --top 10000",
+    "model:train": "node --max-old-space-size=8192 scripts/model/run.mjs train --phish .model-data/phish-train.txt --benign .model-data/benign-home.txt@0.6,.model-data/benign-paths.txt,.model-data/login-train.txt@25 --exclude .model-data/phish-fresh.txt,.model-data/benign-top.txt,.model-data/benign-test.txt,.model-data/login-test.txt --epochs 2 --prune 0.6 --refit 1",
+    "model:eval": "node scripts/model/run.mjs eval --phish .model-data/phish-fresh.txt --benign .model-data/benign-top.txt,.model-data/benign-test.txt,.model-data/login-test.txt"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

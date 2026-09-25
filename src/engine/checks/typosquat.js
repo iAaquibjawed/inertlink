@@ -20,8 +20,8 @@
  */
 
 import { WEIGHTS } from '../scoring.js';
-import { editDistance } from '../parse.js';
-import BRANDS from '../data/top-brands.json';
+import { editDistance, isGatedSuffix } from '../parse.js';
+import { BRAND_LIST, isBrandOwned } from '../brands.js';
 
 const MIN_LABEL = 5;
 
@@ -60,21 +60,24 @@ export default {
     const base = { id: 'typosquat', hit: false, weight: 0, reason: '' };
     const label = parsed.registrableLabel;
     if (!label || label.length < MIN_LABEL) return base;
+    if (isGatedSuffix(parsed.tld)) return base; // nobody can register a typo under gov.bd
 
     let best = null;
 
     for (const segment of candidateSegments(label)) {
       const folded = foldHomoglyphs(segment);
 
-      for (const brand of BRANDS.brands) {
+      for (const brand of BRAND_LIST) {
         if (brand.label.length < MIN_LABEL) continue;
 
-        // Guard 1: the genuine domain is not a typosquat of itself (including regional ccTLDs).
-        if (parsed.registrable === brand.domain || parsed.registrableLabel === brand.label) return base;
+        // Guard 1: the genuine domain is not a typosquat of itself. An exact label on a domain the
+        // brand does *not* own ('roblox.ly') is not a typo either — that is brand-impersonation's.
+        if (isBrandOwned(parsed, brand) || parsed.registrableLabel === brand.label) return base;
+        if (brand.notTypos?.includes(segment)) continue;
 
         const raw = editDistance(segment, brand.label, 2);
         const homoglyph = editDistance(folded, brand.label, 2);
-        const distance = Math.min(raw, homoglyph);
+        const distance = brand.homoglyphOnly ? (homoglyph === 0 && raw > 0 ? 0 : 3) : Math.min(raw, homoglyph);
         if (distance === 0 && segment === brand.label) continue; // exact — see guard 1
         if (distance > 2) continue;
 
